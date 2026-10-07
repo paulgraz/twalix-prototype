@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Twalix — Prototyp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root { --host-bg: #DDE3E6; --bar-bg: #16242C; --bar-ink: #E8EEF1; --bar-muted: #9FB0B9; --bar-line: #33454F; --bar-on: #0E5A7A; }
+:root[data-host-theme="dark"] { --host-bg: #0B1216; }
+* { -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; }
+body { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; background: var(--host-bg); font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+#bar { flex: none; display: flex; align-items: center; gap: 8px 20px; padding: 8px 16px; background: var(--bar-bg); color: var(--bar-ink); font-size: 14px; overflow-x: auto; white-space: nowrap; }
+#bar strong { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; margin-right: 4px; }
+#bar .grp { display: inline-flex; align-items: center; gap: 8px; }
+#bar .lbl { color: var(--bar-muted); }
+#bar .seg { display: inline-flex; border: 1px solid var(--bar-line); border-radius: 8px; overflow: hidden; }
+#bar button, #bar select { min-height: 36px; padding: 0 12px; border: 0; background: transparent; color: var(--bar-ink); font: inherit; font-weight: 600; cursor: pointer; }
+#bar .seg button + button { border-left: 1px solid var(--bar-line); }
+#bar .seg button[aria-pressed="true"] { background: var(--bar-on); color: #fff; }
+#bar select { border: 1px solid var(--bar-line); border-radius: 8px; padding-right: 8px; }
+#bar select option { color: #111; }
+#bar #reset { margin-left: auto; border: 1px solid var(--bar-line); border-radius: 8px; }
+#bar button:focus-visible, #bar select:focus-visible { outline: 2px solid #7CC4E4; outline-offset: -2px; }
+#stage { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; overflow: hidden; }
+#box { flex: none; }
+#device { transform-origin: 0 0; overflow: hidden; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.18), 0 18px 50px rgba(0,0,0,.22); }
+body.bare #stage { padding: 0; }
+body.bare #device { box-shadow: none; }
+body.bare #bar .only-wide { display: none; }
+</style>
+</head>
+<body>
+<div id="bar">
+  <strong>Twalix</strong>
+  <span class="grp only-wide"><span class="lbl">Gerät</span>
+    <span class="seg" data-prop="layout"><button type="button" data-val="tablet">Tablet</button><button type="button" data-val="phone">Telefon</button></span>
+  </span>
+  <span class="grp"><span class="lbl">Thema</span>
+    <span class="seg" data-prop="theme"><button type="button" data-val="light">Hell</button><button type="button" data-val="dark">Dunkel</button></span>
+  </span>
+  <label class="grp"><span class="lbl">Bereich</span>
+    <select id="area">
+      <option value="projects">App</option>
+      <option value="auth">Anmeldung</option>
+      <option value="admin">Verwaltung</option>
+    </select>
+  </label>
+  <label class="grp"><span class="lbl">Szenario</span>
+    <select id="scenario">
+      <option value="">Normal</option>
+      <option value="expired">Lizenz abgelaufen</option>
+      <option value="full">Keine freien Plätze</option>
+    </select>
+  </label>
+  <button type="button" id="reset">Neu starten</button>
+</div>
+<div id="stage"><div id="box"><div id="device"></div></div></div>
+
+<template id="tpl">
+<!--TEMPLATE-->
+</template>
+
+<script>
+/* Minimal runtime for the prototype: {{holes}}, <sc-if>, <sc-for>, events, state. */
+(function () {
+  const WHOLE = /^\s*\{\{([^}]*)\}\}\s*$/;
+  const UNITLESS = /^(lineHeight|opacity|zIndex|flex|flexGrow|flexShrink|fontWeight|order)$/;
+
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true;
+    if (path === 'false') return false;
+    if (path === 'null') return null;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return Number(path);
+    let v = scope;
+    for (const p of path.split('.')) { if (v == null) return undefined; v = v[p]; }
+    return v;
+  }
+  function interp(s, scope) {
+    return s.replace(/\{\{([^}]*)\}\}/g, (m, p) => { const v = lookup(p, scope); return v == null || v === false || v === true ? '' : String(v); });
+  }
+  function styleText(o) {
+    return Object.keys(o).map((k) => {
+      let v = o[k];
+      if (v == null || v === false) return '';
+      const custom = k.indexOf('--') === 0;
+      if (typeof v === 'number' && !custom && !UNITLESS.test(k)) v = v + 'px';
+      return (custom ? k : k.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())) + ':' + v;
+    }).filter(Boolean).join(';');
+  }
+  function attach(el) {
+    if (!el.__ev) return;
+    el.__ls = el.__ls || {};
+    Object.keys(el.__ev).forEach((t) => {
+      if (el.__ls[t]) return;
+      el.__ls[t] = true;
+      el.addEventListener(t, (e) => { const f = el.__ev && el.__ev[t]; if (f) f(e); });
+    });
+  }
+  function build(node, scope, out) {
+    if (node.nodeType === 3) { const t = document.createTextNode(interp(node.data, scope)); t.__k = node; out.appendChild(t); return; }
+    if (node.nodeType !== 1) return;
+    const ln = node.localName;
+    if (ln === 'sc-if') {
+      const m = WHOLE.exec(node.getAttribute('value') || '');
+      if (m && lookup(m[1], scope)) node.childNodes.forEach((c) => build(c, scope, out));
+      return;
+    }
+    if (ln === 'sc-for') {
+      const m = WHOLE.exec(node.getAttribute('list') || '');
+      const list = (m && lookup(m[1], scope)) || [];
+      const as = node.getAttribute('as') || 'item';
+      list.forEach((it, i) => {
+        const sc = Object.create(scope); sc[as] = it; sc.$index = i;
+        node.childNodes.forEach((c) => build(c, sc, out));
+      });
+      return;
+    }
+    const el = document.createElementNS(node.namespaceURI, ln);
+    el.__k = node;
+    for (const a of Array.from(node.attributes)) {
+      const n = a.name;
+      if (n.indexOf('hint-') === 0) continue;
+      const m = WHOLE.exec(a.value);
+      const v = m ? lookup(m[1], scope) : (a.value.indexOf('{{') >= 0 ? interp(a.value, scope) : a.value);
+      if (m && /^on[a-z]+$/.test(n)) {
+        if (typeof v === 'function') { const t = n.slice(2); (el.__ev || (el.__ev = {}))[t === 'change' ? 'input' : t] = v; }
+        continue;
+      }
+      if (n === 'style' && v && typeof v === 'object') { el.setAttribute('style', styleText(v)); continue; }
+      if (n === 'value' && (ln === 'input' || ln === 'textarea')) { el.__value = v == null ? '' : String(v); el.value = el.__value; continue; }
+      if (n === 'checked') { el.__checked = !!v; el.checked = !!v; continue; }
+      if (v == null) continue;
+      if (typeof v === 'boolean' && n.indexOf('aria-') !== 0) { if (v) el.setAttribute(n, ''); continue; }
+      el.setAttribute(n, String(v));
+    }
+    attach(el);
+    node.childNodes.forEach((c) => build(c, scope, el));
+    out.appendChild(el);
+  }
+  function same(a, b) { return a.nodeType === b.nodeType && a.__k === b.__k; }
+  function morphNode(o, n) {
+    if (o.nodeType === 3) { if (o.data !== n.data) o.data = n.data; return; }
+    for (const a of Array.from(o.attributes)) if (!n.hasAttribute(a.name)) o.removeAttribute(a.name);
+    for (const a of Array.from(n.attributes)) if (o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
+    o.__ev = n.__ev; attach(o);
+    if ('__value' in n && o.value !== n.__value) o.value = n.__value;
+    if ('__checked' in n && o.checked !== n.__checked) o.checked = n.__checked;
+    morphChildren(o, n);
+  }
+  function morphChildren(o, n) {
+    let cur = o.firstChild;
+    for (const nn of Array.from(n.childNodes)) {
+      let m = cur;
+      while (m && !same(m, nn)) m = m.nextSibling;
+      if (m) {
+        while (cur !== m) { const x = cur; cur = cur.nextSibling; o.removeChild(x); }
+        morphNode(m, nn); cur = m.nextSibling;
+      } else o.insertBefore(nn, cur);
+    }
+    while (cur) { const x = cur; cur = cur.nextSibling; o.removeChild(x); }
+  }
+
+  class DCLogic {
+    constructor() { this.props = DCLogic.__props || {}; this.state = {}; }
+    setState(patch) {
+      if (typeof patch === 'function') patch = patch(this.state, this.props);
+      this.state = Object.assign({}, this.state, patch);
+      this.forceUpdate();
+    }
+    forceUpdate() {
+      if (this.__queued || this.__dead) return;
+      this.__queued = true;
+      queueMicrotask(() => { this.__queued = false; if (!this.__dead) this.__render(); });
+    }
+    __render() {
+      const holder = document.createElement('div');
+      const vals = this.renderVals();
+      this.__tpl.content.childNodes.forEach((c) => build(c, vals, holder));
+      morphChildren(this.__mount, holder);
+    }
+  }
+  window.DCLogic = DCLogic;
+  window.mountDC = function (Cls, tpl, mount, props) {
+    DCLogic.__props = props;
+    const c = new Cls();
+    c.props = props; c.__tpl = tpl; c.__mount = mount;
+    mount.textContent = '';
+    c.__render();
+    if (c.componentDidMount) c.componentDidMount();
+    return c;
+  };
+  window.unmountDC = function (c) { if (!c) return; c.__dead = true; if (c.componentWillUnmount) c.componentWillUnmount(); };
+})();
+</script>
+
+<script>
+/*LOGIC*/
+</script>
+
+<script>
+(function () {
+  const SIZES = { tablet: [1180, 820], phone: [390, 844] };
+  const device = document.getElementById('device'), box = document.getElementById('box'), stage = document.getElementById('stage');
+  const tpl = document.getElementById('tpl');
+  const narrow = window.matchMedia('(max-width: 600px)');
+  const ui = { layout: 'tablet', theme: 'light', area: 'projects', scenario: '' };
+  let comp = null;
+
+  function props() {
+    return { layout: narrow.matches ? 'phone' : ui.layout, theme: ui.theme, lang: 'de', start: ui.area,
+      licenseExpired: ui.scenario === 'expired', seatsFull: ui.scenario === 'full' };
+  }
+  function fit() {
+    const p = props(), bare = narrow.matches;
+    document.body.classList.toggle('bare', bare);
+    document.documentElement.setAttribute('data-host-theme', ui.theme);
+    if (bare) {
+      box.style.width = stage.clientWidth + 'px'; box.style.height = stage.clientHeight + 'px';
+      device.style.width = '100%'; device.style.height = '100%'; device.style.transform = ''; device.style.borderRadius = '0';
+      return;
+    }
+    const s = SIZES[p.layout], pad = 40;
+    const k = Math.min(1, (stage.clientWidth - pad) / s[0], (stage.clientHeight - pad) / s[1]);
+    box.style.width = s[0] * k + 'px'; box.style.height = s[1] * k + 'px';
+    device.style.width = s[0] + 'px'; device.style.height = s[1] + 'px';
+    device.style.transform = 'scale(' + k + ')';
+    device.style.borderRadius = (p.layout === 'phone' ? 28 : 18) + 'px';
+  }
+  function sync() {
+    document.querySelectorAll('#bar .seg').forEach((seg) => {
+      seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(ui[seg.dataset.prop] === b.dataset.val)));
+    });
+  }
+  function start() { unmountDC(comp); fit(); comp = mountDC(Component, tpl, device, props()); }
+  function update() { fit(); comp.props = props(); comp.forceUpdate(); }
+
+  document.querySelectorAll('#bar .seg button').forEach((b) => b.addEventListener('click', () => {
+    ui[b.parentNode.dataset.prop] = b.dataset.val; sync(); update();
+  }));
+  document.getElementById('area').addEventListener('change', (e) => { ui.area = e.target.value; start(); });
+  document.getElementById('scenario').addEventListener('change', (e) => { ui.scenario = e.target.value; start(); });
+  document.getElementById('reset').addEventListener('click', start);
+  window.addEventListener('resize', update);
+  narrow.addEventListener('change', update);
+
+  sync(); start();
+})();
+</script>
+</body>
+</html>
