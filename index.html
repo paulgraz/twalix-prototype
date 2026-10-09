@@ -69,21 +69,57 @@ body.bare #bar .only-wide { display: none; }
 <div style="position: absolute; top: 0; left: 0; right: 0; height: 44px; box-sizing: border-box; padding: 0 16px; display: flex; align-items: center; justify-content: center; background: var(--warnBg); color: var(--warnInk); font-size: 15px; font-weight: 600; text-align: center">{{s.licence}}</div>
 </sc-if>
 
-<sc-if value="{{isProjects}}" hint-placeholder-val="{{ true }}">
-<div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column">
-  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px {{pad}}px; background: var(--surface); border-bottom: 1px solid var(--line)">
+<sc-if value="{{isWho}}" hint-placeholder-val="{{ true }}">
+<div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: {{whoDir}}; gap: {{whoGap}}px; padding: {{whoPad}}px; box-sizing: border-box; overflow: hidden">
+  <section style="flex: {{whoLeftFlex}}; min-width: 0; display: flex; flex-direction: column; gap: 14px">
     <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Twalix</div>
-    <button onClick="{{syncNow}}" style="margin-right: auto; min-height: 46px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{syncLabel}}</button>
-    <button aria-label="{{s.account}}" onClick="{{goSettings}}" style="width: 52px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1-4.5 4-6.5 8-6.5s7 2 8 6.5"></path></svg>
-    </button>
-    <input aria-label="{{s.search}}" placeholder="{{s.search}}" value="{{q}}" onChange="{{onQ}}" style="flex: 1 1 220px; max-width: 420px; min-height: 52px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font-family: inherit; font-size: 18px">
-    <button disabled="{{ro}}" onClick="{{openNew}}" style="min-height: 52px; padding: 0 22px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; opacity: {{roOpacity}}">+ {{s.newProject}}</button>
+    <h1 style="margin: 0; font-size: {{whoTitleSize}}px; line-height: 1.2">{{s.whoTitle}}</h1>
+    <sc-if value="{{hasCurUser}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; align-items: center; gap: 16px; padding: 16px 18px; border: 2px solid var(--pri); border-radius: 14px; background: var(--surface)">
+        <div style="flex: none; width: 56px; height: 56px; border-radius: 50%; background: var(--pri); color: var(--priText); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700">{{curUser.initials}}</div>
+        <div style="min-width: 0">
+          <div style="font-size: 14px; color: var(--muted)">{{s.whoLast}}</div>
+          <div style="font-size: 22px; font-weight: 700; overflow-wrap: anywhere">{{curUser.name}}</div>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{noCurUser}}" hint-placeholder-val="{{ false }}">
+      <p style="margin: 0; color: var(--muted)">{{s.whoFirst}}</p>
+    </sc-if>
+    <div style="flex: {{whoSpacer}}"></div>
+    <sc-if value="{{hasCurUser}}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{continueUser}}" style="min-height: 64px; padding: 0 20px; border: 0; border-radius: 12px; background: var(--acc); color: var(--accText); font-family: inherit; font-size: 19px; font-weight: 700; cursor: pointer">{{continueLabel}}</button>
+    </sc-if>
+    <div style="display: {{wideDisplay}}; font-size: 14px; color: var(--muted)">{{licSyncLine}}</div>
+  </section>
+  <section style="flex: 1 1 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 12px">
+    <div style="font-size: 16px; font-weight: 600">{{whoListTitle}}</div>
+    <div style="flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 8px">
+      <sc-for list="{{whoList}}" as="u" hint-placeholder-count="6">
+        <button onClick="{{u.pick}}" style="flex: none; display: flex; align-items: center; gap: 14px; width: 100%; min-height: 60px; padding: 8px 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 18px; font-weight: 600; text-align: left; cursor: pointer">
+          <span style="flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--surface2); color: var(--ink); display: inline-flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700">{{u.initials}}</span>
+          <span>{{u.name}}</span>
+        </button>
+      </sc-for>
+      <sc-if value="{{whoEmpty}}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 8px 0; color: var(--muted)">{{s.whoNone}}</p>
+      </sc-if>
+    </div>
+    <input aria-label="{{s.whoSearch}}" placeholder="{{s.whoSearch}}" value="{{userQ}}" onChange="{{onUserQ}}" style="flex: none; min-height: 56px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 18px">
+  </section>
+</div>
+</sc-if>
+
+<sc-if value="{{isProjects}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column">
+  <header style="flex: none; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px {{pad}}px; box-sizing: border-box; background: var(--surface); border-bottom: 1px solid var(--line)">
+    <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em">Twalix</div>
+    <div style="margin-left: auto; font-size: 15px; color: var(--muted)">{{syncLabel}}</div>
   </header>
   <div style="flex: 1; min-height: 0; overflow: auto; padding: 20px {{pad}}px; display: flex; flex-direction: column; gap: 10px">
     <h1 style="margin: 0 0 6px; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">{{s.projects}}</h1>
     <sc-for list="{{projects}}" as="p" hint-placeholder-count="4">
-      <button onClick="{{p.open}}" style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; width: 100%; min-height: 72px; padding: 14px 18px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 18px; text-align: left; cursor: pointer">
+      <button onClick="{{p.open}}" style="flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; width: 100%; min-height: 72px; padding: 14px 18px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 18px; text-align: left; cursor: pointer">
         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 500; color: var(--pri); min-width: 96px">{{p.num}}</span>
         <span style="flex: 1 1 200px; font-weight: 600">{{p.name}}</span>
         <span style="font-size: 15px; color: var(--muted)">{{p.changed}}</span>
@@ -94,30 +130,29 @@ body.bare #bar .only-wide { display: none; }
       <p style="margin: 24px 0; color: var(--muted)">{{s.noProjects}}</p>
     </sc-if>
   </div>
+  <footer style="flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px {{pad}}px; background: var(--surface); border-top: 1px solid var(--line)">
+    <button aria-label="{{s.switchUser}}" onClick="{{goWho}}" style="flex: 0 1 auto; min-width: 0; max-width: {{chipMax}}px; min-height: 52px; padding: 0 16px 0 8px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 10px">
+      <span style="flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--pri); color: var(--priText); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700">{{userChip.initials}}</span>
+      <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{userChip.name}}</span>
+    </button>
+    <button aria-label="{{s.account}}" onClick="{{goSettings}}" style="flex: none; width: 52px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"></path><circle cx="16" cy="7" r="2.2"></circle><circle cx="10" cy="17" r="2.2"></circle></svg>
+    </button>
+    <input aria-label="{{s.search}}" placeholder="{{s.search}}" value="{{q}}" onChange="{{onQ}}" style="flex: 1 1 {{searchBasis}}; order: {{searchOrder}}; min-width: 0; min-height: 52px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font-family: inherit; font-size: 18px">
+    <button disabled="{{ro}}" onClick="{{openNew}}" style="flex: none; margin-left: auto; min-height: 52px; padding: 0 22px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; opacity: {{roOpacity}}">{{newProjectLabel}}</button>
+  </footer>
 </div>
 </sc-if>
 
 <sc-if value="{{isProject}}" hint-placeholder-val="{{ false }}">
 <div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column">
-  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px {{pad}}px; background: var(--surface); border-bottom: 1px solid var(--line)">
-    <button aria-label="{{s.back}}" onClick="{{goProjects}}" style="width: 52px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
-    </button>
-    <div style="flex: 1 1 200px; min-width: 0">
+  <header style="flex: none; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px {{pad}}px; box-sizing: border-box; background: var(--surface); border-bottom: 1px solid var(--line)">
+    <div style="flex: 1; min-width: 0">
       <div style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; color: var(--pri)">{{cur.num}}</div>
       <div style="font-size: 21px; font-weight: 700; letter-spacing: -0.01em">{{cur.name}}</div>
     </div>
-    <button aria-label="{{s.editProject}}" disabled="{{ro}}" onClick="{{openEdit}}" style="width: 52px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; opacity: {{roOpacity}}">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>
-    </button>
-    <button onClick="{{openExport}}" style="min-height: 52px; padding: 0 20px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.exportBtn}}</button>
-    <button disabled="{{ro}}" onClick="{{startSample}}" style="min-height: 52px; padding: 0 22px; border: 0; border-radius: 10px; background: var(--acc); color: var(--accText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; opacity: {{roOpacity}}">+ {{s.newSample}}</button>
+    <div style="flex: none; font-size: 15px; color: var(--muted)">{{projCount}}</div>
   </header>
-  <div style="display: flex; gap: 8px; padding: 12px {{pad}}px 0">
-    <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
-      <button aria-pressed="{{t.on}}" onClick="{{t.pick}}" style="min-height: 46px; padding: 0 18px; border: 1.5px solid {{t.bd}}; border-radius: 999px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{t.label}}</button>
-    </sc-for>
-  </div>
   <div style="flex: 1; min-height: 0; overflow: auto; padding: 16px {{pad}}px 24px">
 
     <sc-if value="{{tabSamples}}" hint-placeholder-val="{{ true }}">
@@ -128,7 +163,7 @@ body.bare #bar .only-wide { display: none; }
             <span style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 500; min-width: 150px">{{x.num}}</span>
             <span style="font-size: 15px; font-weight: 600; min-width: 100px">{{x.kind}}</span>
             <span style="flex: 1 1 160px; color: var(--muted)">{{x.analytes}}</span>
-            <span style="font-size: 15px; color: var(--muted)">{{x.meta}}</span>
+            <span style="font-size: 15px; color: var(--muted)">{{x.by}}</span>
             <span style="font-size: 15px; color: var(--muted)">{{x.time}}</span>
           </button>
         </sc-for>
@@ -140,16 +175,18 @@ body.bare #bar .only-wide { display: none; }
 
     <sc-if value="{{tabTable}}" hint-placeholder-val="{{ false }}">
       <div style="overflow-x: auto; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface)">
-        <div style="min-width: 900px">
-          <div style="display: grid; grid-template-columns: 1.1fr 1.4fr 1.1fr 1.6fr 1.4fr 80px 80px; gap: 12px; padding: 12px 16px; background: var(--surface2); font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted)">
-            <div>{{s.thRoom}}</div><div>{{s.thNum}}</div><div>{{s.thKind}}</div><div>{{s.thAnalysis}}</div><div>{{s.thDate}}</div><div>{{s.thPhotos}}</div><div>{{s.thPlan}}</div>
+        <div style="min-width: 1180px">
+          <div style="display: grid; grid-template-columns: 1fr 1.3fr 1fr 1.3fr 1.2fr 1.3fr 1.3fr 64px 56px; gap: 12px; padding: 12px 16px; background: var(--surface2); font-size: 14px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted)">
+            <div>{{s.thRoom}}</div><div>{{s.thNum}}</div><div>{{s.thKind}}</div><div>{{s.thAnalysis}}</div><div>{{s.thTags}}</div><div>{{s.thBy}}</div><div>{{s.thDate}}</div><div>{{s.thPhotos}}</div><div>{{s.thPlan}}</div>
           </div>
           <sc-for list="{{samples}}" as="x" hint-placeholder-count="3">
-            <div style="display: grid; grid-template-columns: 1.1fr 1.4fr 1.1fr 1.6fr 1.4fr 80px 80px; gap: 12px; padding: 14px 16px; border-top: 1px solid var(--line); font-size: 16px; align-items: center">
+            <div style="display: grid; grid-template-columns: 1fr 1.3fr 1fr 1.3fr 1.2fr 1.3fr 1.3fr 64px 56px; gap: 12px; padding: 14px 16px; border-top: 1px solid var(--line); font-size: 16px; align-items: center">
               <div style="font-weight: 600">{{x.room}}</div>
               <div style="font-family: 'IBM Plex Mono', monospace; font-size: 15px">{{x.num}}</div>
               <div>{{x.kind}}</div>
               <div>{{x.analytes}}</div>
+              <div>{{x.tags}}</div>
+              <div>{{x.by}}</div>
               <div style="color: var(--muted)">{{x.time}}</div>
               <div>{{x.photoCount}}</div>
               <div>{{x.planMark}}</div>
@@ -183,29 +220,45 @@ body.bare #bar .only-wide { display: none; }
     </sc-if>
 
   </div>
+  <footer style="flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px {{pad}}px; background: var(--surface); border-top: 1px solid var(--line)">
+    <button aria-label="{{s.back}}" onClick="{{goProjects}}" style="flex: none; min-width: 52px; height: 52px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+      <span style="display: {{wideDisplay}}">{{s.back}}</span>
+    </button>
+    <div style="flex: {{tabsFlex}}; order: {{tabsOrder}}; display: flex; gap: 6px">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+        <button aria-pressed="{{t.on}}" onClick="{{t.pick}}" style="flex: {{tabBtnFlex}}; min-height: 52px; padding: 0 18px; border: 1.5px solid {{t.bd}}; border-radius: 999px; background: {{t.bg}}; color: {{t.fg}}; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{t.label}}</button>
+      </sc-for>
+    </div>
+    <button aria-label="{{s.editProject}}" disabled="{{ro}}" onClick="{{openEdit}}" style="flex: none; margin-left: auto; width: 52px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; opacity: {{roOpacity}}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>
+    </button>
+    <button onClick="{{openExport}}" style="flex: none; min-height: 52px; padding: 0 18px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{exportLabel}}</button>
+    <button disabled="{{ro}}" onClick="{{startSample}}" style="flex: none; min-height: 52px; padding: 0 22px; border: 0; border-radius: 10px; background: var(--acc); color: var(--accText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; opacity: {{roOpacity}}">{{newSampleLabel}}</button>
+  </footer>
 </div>
 </sc-if>
 
 <sc-if value="{{isWizard}}" hint-placeholder-val="{{ false }}">
 <div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column">
-  <header style="display: flex; align-items: center; gap: 12px; padding: 12px {{pad}}px; background: var(--surface); border-bottom: 1px solid var(--line)">
-    <button aria-label="{{s.cancel}}" onClick="{{closeWizard}}" style="flex: none; width: 52px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
-    </button>
+  <header style="flex: none; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px {{pad}}px; box-sizing: border-box; background: var(--surface); border-bottom: 1px solid var(--line)">
     <div style="flex: 1; min-width: 0">
       <div style="font-size: 14px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{cur.num}} · {{cur.name}}</div>
       <div style="font-size: 19px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ctx}}</div>
     </div>
+    <div style="flex: none; display: {{wideDisplay}}; font-size: 15px; color: var(--muted)">{{byLine}}</div>
   </header>
-  <div style="display: flex; gap: 6px; padding: 10px {{pad}}px; background: var(--surface); border-bottom: 1px solid var(--line)">
-    <sc-for list="{{steps}}" as="sp" hint-placeholder-count="5">
-      <button aria-pressed="{{sp.on}}" aria-label="{{sp.label}}" onClick="{{sp.go}}" style="flex: 1 1 0; min-width: 0; min-height: 46px; padding: 0 8px; border: 0; border-radius: 10px; background: {{sp.bg}}; color: {{sp.fg}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px">
-        <span>{{sp.n}}</span><span style="display: {{stepLabelDisplay}}; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{sp.label}}</span>
-      </button>
-    </sc-for>
-  </div>
-
-  <div style="flex: 1; min-height: 0; overflow: auto; padding: 20px {{pad}}px">
+  <div style="flex: 1; min-height: 0; display: flex">
+    <sc-if value="{{showRail}}" hint-placeholder-val="{{ true }}">
+      <nav aria-label="{{s.steps}}" style="flex: none; width: 230px; display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 16px 0 16px {{pad}}px; box-sizing: border-box">
+        <sc-for list="{{steps}}" as="sp" hint-placeholder-count="5">
+          <button aria-pressed="{{sp.on}}" onClick="{{sp.go}}" style="min-height: 60px; padding: 0 14px; border: 0; border-radius: 12px; background: {{sp.bg}}; color: {{sp.fg}}; font-family: inherit; font-size: 16px; font-weight: 600; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 12px">
+            <span style="flex: none; width: 28px; font-family: 'IBM Plex Mono', monospace; font-size: 17px">{{sp.n}}</span><span>{{sp.label}}</span>
+          </button>
+        </sc-for>
+      </nav>
+    </sc-if>
+    <div style="flex: 1; min-width: 0; overflow: auto; padding: 20px {{pad}}px">
 
     <sc-if value="{{s1}}" hint-placeholder-val="{{ false }}">
       <div style="display: flex; flex-direction: column; gap: 22px; max-width: 720px">
@@ -226,10 +279,12 @@ body.bare #bar .only-wide { display: none; }
           <label style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 8px; font-size: 16px; font-weight: 600">{{s.sampleNo}}
             <input value="{{d.num}}" onChange="{{onNum}}" onKeyDown="{{onNumKey}}" autocapitalize="characters" style="min-height: 56px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 20px">
           </label>
-          <button onClick="{{scan}}" style="min-height: 56px; padding: 0 20px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 10px">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M12 9v6M16 9v6"></path></svg>
-            {{s.scan}}
-          </button>
+          <sc-if value="{{scanEnabled}}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{scan}}" style="min-height: 56px; padding: 0 20px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 10px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3M8 9v6M12 9v6M16 9v6"></path></svg>
+              {{s.scan}}
+            </button>
+          </sc-if>
         </div>
         <sc-if value="{{dup}}" hint-placeholder-val="{{ false }}">
           <div style="padding: 12px 16px; border-radius: 10px; background: var(--warnBg); color: var(--warnInk); font-size: 16px; font-weight: 500">{{s.dupWarn}}</div>
@@ -243,6 +298,18 @@ body.bare #bar .only-wide { display: none; }
                 <span style="font-size: 14px; font-weight: 400; opacity: 0.85">{{k.hint}}</span>
               </button>
             </sc-for>
+          </div>
+        </div>
+        <div role="group" aria-label="{{s.tags}}" style="display: flex; flex-direction: column; gap: 8px">
+          <div style="font-size: 16px; font-weight: 600">{{s.tags}}</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <sc-for list="{{tagChips}}" as="tg" hint-placeholder-count="6">
+              <button aria-pressed="{{tg.on}}" onClick="{{tg.toggle}}" style="min-height: 48px; padding: 0 18px; border: 1.5px solid {{tg.bd}}; border-radius: 999px; background: {{tg.bg}}; color: {{tg.fg}}; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{tg.label}}</button>
+            </sc-for>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; max-width: 520px">
+            <input aria-label="{{s.customTag}}" placeholder="{{s.customTag}}" value="{{customTag}}" onChange="{{onCustomTag}}" onKeyDown="{{onCustomTagKey}}" style="flex: 1 1 200px; min-height: 50px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px">
+            <button onClick="{{addCustomTag}}" style="min-height: 50px; padding: 0 18px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.add}}</button>
           </div>
         </div>
       </div>
@@ -267,49 +334,51 @@ body.bare #bar .only-wide { display: none; }
 
     <sc-if value="{{s3}}" hint-placeholder-val="{{ false }}">
       <div style="display: flex; flex-direction: column; gap: 12px">
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
-          <sc-for list="{{planChips}}" as="pc" hint-placeholder-count="2">
-            <button aria-pressed="{{pc.on}}" onClick="{{pc.pick}}" style="min-height: 46px; padding: 0 16px; border: 1.5px solid {{pc.bd}}; border-radius: 999px; background: {{pc.bg}}; color: {{pc.fg}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{pc.name}}</button>
-          </sc-for>
-          <button onClick="{{addPlan}}" style="min-height: 46px; padding: 0 16px; border: 1.5px dashed var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">+ PDF</button>
-          <div style="margin-left: auto; display: flex; align-items: center; gap: 8px">
-            <button aria-label="{{s.zoomOut}}" onClick="{{zoomOut}}" style="width: 46px; height: 46px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 24px; font-weight: 600; cursor: pointer">−</button>
+        <div style="font-size: 15px; color: var(--muted)">{{s.planHint}}</div>
+        <div style="display: flex; flex-direction: {{planDir}}; gap: 12px">
+          <div style="flex: 1; min-width: 0; height: {{viewH}}px; overflow: auto; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface2)">
+            <div onClick="{{placeMarker}}" style="position: relative; width: {{planW}}; cursor: crosshair">
+              <svg viewBox="0 0 1200 640" style="display: block; width: 100%; height: auto; background: var(--paper); color: var(--planInk)" fill="none" stroke="currentColor" aria-hidden="true">
+                <rect x="40" y="40" width="1120" height="560" stroke-width="7"></rect>
+                <path d="M40 250H520M600 250H1160M420 40V250M760 40V250M40 360H300M380 360H820M900 360H1160M560 360V600M900 360V600" stroke-width="5"></path>
+                <path d="M520 250a80 80 0 0 1 80 -80M300 360a80 80 0 0 0 80 80M820 360a80 80 0 0 0 80 80" stroke-width="2"></path>
+                <path d="M120 40v-14h160v14M860 40v-14h200v14M200 600v14h220v-14M660 600v14h160v-14" stroke-width="2"></path>
+                <g fill="currentColor" stroke="none" font-family="IBM Plex Sans, sans-serif" font-size="24">
+                  <text x="170" y="150">Raum 11</text>
+                  <text x="540" y="150">Raum 12</text>
+                  <text x="900" y="150">Raum 13</text>
+                  <text x="540" y="315">Flur EG</text>
+                  <text x="230" y="490">Technik</text>
+                  <text x="680" y="490">Lager</text>
+                  <text x="990" y="490">WC</text>
+                </g>
+              </svg>
+              <sc-for list="{{markers}}" as="m" hint-placeholder-count="2">
+                <div style="position: absolute; left: {{m.left}}; top: {{m.top}}; pointer-events: none">
+                  <div style="position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; box-sizing: border-box; border-radius: 50%; background: #0E5A7A; border: 2.5px solid #FFFFFF; box-shadow: 0 0 0 1.5px #10201C"></div>
+                  <div style="position: absolute; left: 14px; top: -13px; padding: 2px 7px; border-radius: 5px; background: #FFFFFF; color: #10201C; border: 1.5px solid #10201C; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; white-space: nowrap">{{m.label}}</div>
+                </div>
+              </sc-for>
+              <sc-if value="{{hasDraftMarker}}" hint-placeholder-val="{{ false }}">
+                <div style="position: absolute; left: {{dm.left}}; top: {{dm.top}}; pointer-events: none">
+                  <div style="position: absolute; left: -13px; top: -13px; width: 26px; height: 26px; box-sizing: border-box; border-radius: 50%; background: #D2560F; border: 3px solid #FFFFFF; box-shadow: 0 0 0 2px #10201C"></div>
+                  <div style="position: absolute; left: 19px; top: -15px; padding: 3px 9px; border-radius: 5px; background: #D2560F; color: #FFFFFF; border: 1.5px solid #10201C; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; white-space: nowrap; text-shadow: 0 0 2px #5A2203">{{dm.label}}</div>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+          <div style="flex: none; display: flex; flex-direction: {{ctrlDir}}; align-items: center; justify-content: center; gap: 10px">
+            <button aria-label="{{s.zoomIn}}" onClick="{{zoomIn}}" style="width: 60px; height: 60px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 28px; font-weight: 600; cursor: pointer">+</button>
             <div style="min-width: 56px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 15px">{{zoomLabel}}</div>
-            <button aria-label="{{s.zoomIn}}" onClick="{{zoomIn}}" style="width: 46px; height: 46px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 24px; font-weight: 600; cursor: pointer">+</button>
-            <button onClick="{{undoMarker}}" style="min-height: 46px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.undo}}</button>
+            <button aria-label="{{s.zoomOut}}" onClick="{{zoomOut}}" style="width: 60px; height: 60px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 28px; font-weight: 600; cursor: pointer">−</button>
+            <button onClick="{{undoMarker}}" style="min-height: 60px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.undo}}</button>
           </div>
         </div>
-        <div style="font-size: 15px; color: var(--muted)">{{s.planHint}}</div>
-        <div style="height: {{viewH}}px; overflow: auto; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface2)">
-          <div onClick="{{placeMarker}}" style="position: relative; width: {{planW}}; cursor: crosshair">
-            <svg viewBox="0 0 1200 640" style="display: block; width: 100%; height: auto; background: var(--paper); color: var(--planInk)" fill="none" stroke="currentColor" aria-hidden="true">
-              <rect x="40" y="40" width="1120" height="560" stroke-width="7"></rect>
-              <path d="M40 250H520M600 250H1160M420 40V250M760 40V250M40 360H300M380 360H820M900 360H1160M560 360V600M900 360V600" stroke-width="5"></path>
-              <path d="M520 250a80 80 0 0 1 80 -80M300 360a80 80 0 0 0 80 80M820 360a80 80 0 0 0 80 80" stroke-width="2"></path>
-              <path d="M120 40v-14h160v14M860 40v-14h200v14M200 600v14h220v-14M660 600v14h160v-14" stroke-width="2"></path>
-              <g fill="currentColor" stroke="none" font-family="IBM Plex Sans, sans-serif" font-size="24">
-                <text x="170" y="150">Raum 11</text>
-                <text x="540" y="150">Raum 12</text>
-                <text x="900" y="150">Raum 13</text>
-                <text x="540" y="315">Flur EG</text>
-                <text x="230" y="490">Technik</text>
-                <text x="680" y="490">Lager</text>
-                <text x="990" y="490">WC</text>
-              </g>
-            </svg>
-            <sc-for list="{{markers}}" as="m" hint-placeholder-count="2">
-              <div style="position: absolute; left: {{m.left}}; top: {{m.top}}; pointer-events: none">
-                <div style="position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; box-sizing: border-box; border-radius: 50%; background: #0E5A7A; border: 2.5px solid #FFFFFF; box-shadow: 0 0 0 1.5px #10201C"></div>
-                <div style="position: absolute; left: 14px; top: -13px; padding: 2px 7px; border-radius: 5px; background: #FFFFFF; color: #10201C; border: 1.5px solid #10201C; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; white-space: nowrap">{{m.label}}</div>
-              </div>
-            </sc-for>
-            <sc-if value="{{hasDraftMarker}}" hint-placeholder-val="{{ false }}">
-              <div style="position: absolute; left: {{dm.left}}; top: {{dm.top}}; pointer-events: none">
-                <div style="position: absolute; left: -13px; top: -13px; width: 26px; height: 26px; box-sizing: border-box; border-radius: 50%; background: #D2560F; border: 3px solid #FFFFFF; box-shadow: 0 0 0 2px #10201C"></div>
-                <div style="position: absolute; left: 19px; top: -15px; padding: 3px 9px; border-radius: 5px; background: #D2560F; color: #FFFFFF; border: 1.5px solid #10201C; font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; white-space: nowrap; text-shadow: 0 0 2px #5A2203">{{dm.label}}</div>
-              </div>
-            </sc-if>
-          </div>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px">
+          <sc-for list="{{planChips}}" as="pc" hint-placeholder-count="2">
+            <button aria-pressed="{{pc.on}}" onClick="{{pc.pick}}" style="min-height: 48px; padding: 0 16px; border: 1.5px solid {{pc.bd}}; border-radius: 999px; background: {{pc.bg}}; color: {{pc.fg}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{pc.name}}</button>
+          </sc-for>
+          <button onClick="{{addPlan}}" style="min-height: 48px; padding: 0 16px; border: 1.5px dashed var(--line); border-radius: 999px; background: transparent; color: var(--ink); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">+ PDF</button>
         </div>
       </div>
     </sc-if>
@@ -343,8 +412,8 @@ body.bare #bar .only-wide { display: none; }
     <sc-if value="{{s5}}" hint-placeholder-val="{{ false }}">
       <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
         <div style="flex: 1 1 340px; display: flex; flex-direction: column; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface); overflow: hidden">
-          <sc-for list="{{review}}" as="rv" hint-placeholder-count="5">
-            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-bottom: 1px solid var(--line)">
+          <sc-for list="{{review}}" as="rv" hint-placeholder-count="7">
+            <div style="display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 16px; border-bottom: 1px solid var(--line)">
               <div style="flex: 0 0 120px; font-size: 14px; color: var(--muted)">{{rv.label}}</div>
               <div style="flex: 1; min-width: 0; font-weight: 600; overflow-wrap: anywhere">{{rv.value}}</div>
               <button onClick="{{rv.go}}" style="min-height: 44px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.edit}}</button>
@@ -357,7 +426,7 @@ body.bare #bar .only-wide { display: none; }
             <textarea placeholder="{{s.descPh}}" value="{{d.desc}}" onChange="{{onDesc}}" rows="5" style="padding: 14px 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 18px; resize: vertical"></textarea>
           </label>
           <sc-if value="{{canDelete}}" hint-placeholder-val="{{ false }}">
-            <button onClick="{{askDelete}}" style="align-self: flex-start; min-height: 48px; padding: 0 18px; border: 1.5px solid var(--danger); border-radius: 10px; background: transparent; color: var(--danger); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.del}}</button>
+            <button onClick="{{askDelete}}" style="align-self: flex-end; min-height: 48px; padding: 0 18px; border: 1.5px solid var(--danger); border-radius: 10px; background: transparent; color: var(--danger); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.del}}</button>
           </sc-if>
           <sc-if value="{{confirmDel}}" hint-placeholder-val="{{ false }}">
             <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 10px; background: var(--warnBg); color: var(--warnInk)">
@@ -370,16 +439,28 @@ body.bare #bar .only-wide { display: none; }
       </div>
     </sc-if>
 
+    </div>
   </div>
 
-  <footer style="display: flex; gap: 10px; padding: 12px {{pad}}px; background: var(--surface); border-top: 1px solid var(--line)">
-    <sc-if value="{{notLast}}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{showStepBar}}" hint-placeholder-val="{{ false }}">
+    <div style="flex: none; display: flex; gap: 6px; padding: 10px {{pad}}px; background: var(--surface); border-top: 1px solid var(--line)">
+      <sc-for list="{{steps}}" as="sp" hint-placeholder-count="5">
+        <button aria-pressed="{{sp.on}}" aria-label="{{sp.label}}" onClick="{{sp.go}}" style="flex: 1 1 0; min-width: 0; min-height: 46px; padding: 0 8px; border: 0; border-radius: 10px; background: {{sp.bg}}; color: {{sp.fg}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{sp.n}}</button>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <footer style="flex: none; display: flex; gap: 10px; padding: 12px {{pad}}px; background: var(--surface); border-top: 1px solid var(--line)">
+    <button aria-label="{{s.cancel}}" onClick="{{closeWizard}}" style="flex: none; width: 58px; min-height: 58px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+    </button>
+    <sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}">
       <button onClick="{{next}}" style="flex: 1 1 0; min-height: 58px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer">{{s.skip}}</button>
       <button onClick="{{next}}" style="flex: 2 1 0; min-height: 58px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer">{{s.next}}</button>
     </sc-if>
     <sc-if value="{{s5}}" hint-placeholder-val="{{ false }}">
       <button disabled="{{ro}}" onClick="{{save}}" style="flex: 1 1 0; min-height: 58px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer; opacity: {{roOpacity}}">{{s.save}}</button>
-      <button disabled="{{ro}}" onClick="{{saveNext}}" style="flex: 2 1 0; min-height: 58px; border: 0; border-radius: 10px; background: var(--acc); color: var(--accText); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer; opacity: {{roOpacity}}">{{s.saveNext}}</button>
+      <button disabled="{{ro}}" onClick="{{saveNext}}" style="flex: 2 1 0; min-height: 58px; border: 0; border-radius: 10px; background: var(--acc); color: var(--accText); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer; opacity: {{roOpacity}}">{{saveNextLabel}}</button>
     </sc-if>
   </footer>
 </div>
@@ -387,18 +468,10 @@ body.bare #bar .only-wide { display: none; }
 
 <sc-if value="{{isPlan}}" hint-placeholder-val="{{ false }}">
 <div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column">
-  <header style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px {{pad}}px; background: var(--surface); border-bottom: 1px solid var(--line)">
-    <button aria-label="{{s.back}}" onClick="{{closePlan}}" style="flex: none; width: 52px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
-    </button>
-    <div style="flex: 1 1 160px; min-width: 0">
+  <header style="flex: none; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px {{pad}}px; box-sizing: border-box; background: var(--surface); border-bottom: 1px solid var(--line)">
+    <div style="flex: 1; min-width: 0">
       <div style="font-size: 14px; color: var(--muted)">{{pv.countLabel}}</div>
       <div style="font-size: 19px; font-weight: 700; overflow-wrap: anywhere">{{pv.name}}</div>
-    </div>
-    <div style="display: flex; align-items: center; gap: 8px">
-      <button aria-label="{{s.zoomOut}}" onClick="{{zoomOut}}" style="width: 46px; height: 46px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 24px; font-weight: 600; cursor: pointer">−</button>
-      <div style="min-width: 56px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 15px">{{zoomLabel}}</div>
-      <button aria-label="{{s.zoomIn}}" onClick="{{zoomIn}}" style="width: 46px; height: 46px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 24px; font-weight: 600; cursor: pointer">+</button>
     </div>
   </header>
   <div style="flex: 1; min-height: 0; overflow: auto; background: var(--surface2)">
@@ -426,15 +499,21 @@ body.bare #bar .only-wide { display: none; }
       </sc-for>
     </div>
   </div>
+  <footer style="flex: none; display: flex; align-items: center; gap: 10px; padding: 12px {{pad}}px; background: var(--surface); border-top: 1px solid var(--line)">
+    <button aria-label="{{s.back}}" onClick="{{closePlan}}" style="flex: none; min-width: 52px; height: 56px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+      <span style="display: {{wideDisplay}}">{{s.back}}</span>
+    </button>
+    <button aria-label="{{s.zoomOut}}" onClick="{{zoomOut}}" style="flex: none; margin-left: auto; width: 56px; height: 56px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 26px; font-weight: 600; cursor: pointer">−</button>
+    <div style="min-width: 56px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 15px">{{zoomLabel}}</div>
+    <button aria-label="{{s.zoomIn}}" onClick="{{zoomIn}}" style="flex: none; width: 56px; height: 56px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 26px; font-weight: 600; cursor: pointer">+</button>
+  </footer>
 </div>
 </sc-if>
 
 <sc-if value="{{isScan}}" hint-placeholder-val="{{ false }}">
 <div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; background: #0B1113; color: #F2F5F4">
-  <header style="display: flex; align-items: center; gap: 12px; padding: 12px {{pad}}px">
-    <button aria-label="{{s.cancel}}" onClick="{{scanClose}}" style="flex: none; width: 52px; height: 52px; border: 1.5px solid #5B6B68; border-radius: 10px; background: transparent; color: #F2F5F4; cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
-    </button>
+  <header style="display: flex; align-items: center; gap: 12px; padding: 16px {{pad}}px">
     <div style="font-size: 19px; font-weight: 700">{{s.scanTitle}}</div>
   </header>
   <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; padding: 16px">
@@ -451,10 +530,7 @@ body.bare #bar .only-wide { display: none; }
 
 <sc-if value="{{isPhoto}}" hint-placeholder-val="{{ false }}">
 <div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; background: #0B1113; color: #F2F5F4">
-  <header style="display: flex; align-items: center; gap: 12px; padding: 12px {{pad}}px">
-    <button aria-label="{{s.back}}" onClick="{{closePhoto}}" style="flex: none; width: 52px; height: 52px; border: 1.5px solid #5B6B68; border-radius: 10px; background: transparent; color: #F2F5F4; cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
-    </button>
+  <header style="display: flex; align-items: center; gap: 12px; padding: 14px {{pad}}px">
     <div style="flex: 1; min-width: 0">
       <div style="font-size: 14px; color: #A3B5B1">{{ctx}}</div>
       <div style="font-size: 19px; font-weight: 700">{{photoTitle}}</div>
@@ -464,8 +540,12 @@ body.bare #bar .only-wide { display: none; }
     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>
     <div style="font-size: 16px">{{photoTitle}}</div>
   </div>
-  <footer style="display: flex; justify-content: center; padding: 12px {{pad}}px 22px">
-    <button onClick="{{removePhoto}}" style="min-height: 56px; padding: 0 24px; border: 1.5px solid #FF9A9A; border-radius: 10px; background: transparent; color: #FF9A9A; font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.remove}}</button>
+  <footer style="display: flex; align-items: center; gap: 10px; padding: 12px {{pad}}px 22px">
+    <button aria-label="{{s.back}}" onClick="{{closePhoto}}" style="flex: none; min-width: 52px; height: 56px; padding: 0 14px; border: 1.5px solid #5B6B68; border-radius: 10px; background: transparent; color: #F2F5F4; font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+      <span style="display: {{wideDisplay}}">{{s.back}}</span>
+    </button>
+    <button onClick="{{removePhoto}}" style="margin-left: auto; min-height: 56px; padding: 0 24px; border: 1.5px solid #FF9A9A; border-radius: 10px; background: transparent; color: #FF9A9A; font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.remove}}</button>
   </footer>
 </div>
 </sc-if>
@@ -474,28 +554,10 @@ body.bare #bar .only-wide { display: none; }
 <div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; overflow: auto; padding: 24px {{pad}}px; box-sizing: border-box">
   <div style="width: 100%; max-width: 460px; margin: auto; display: flex; flex-direction: column; gap: 18px">
     <div style="font-size: 32px; font-weight: 700; letter-spacing: -0.02em">Twalix</div>
-    <div style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: var(--pri)">{{authStepLabel}}</div>
 
-    <sc-if value="{{a1}}" hint-placeholder-val="{{ false }}">
-      <h1 style="margin: 0; font-size: 24px">{{s.auConnect}}</h1>
-      <p style="margin: 0; color: var(--muted)">{{s.auConnectHint}}</p>
-      <label style="display: flex; flex-direction: column; gap: 8px; font-size: 16px; font-weight: 600">{{s.auCode}}
-        <input value="{{code}}" onChange="{{onCode}}" onKeyDown="{{onCodeKey}}" placeholder="TWX-0000-0000" autocapitalize="characters" style="min-height: 56px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: 'IBM Plex Mono', monospace; font-size: 20px">
-      </label>
-      <sc-if value="{{hasAuthErr}}" hint-placeholder-val="{{ false }}">
-        <div role="alert" style="padding: 12px 16px; border-radius: 10px; background: var(--warnBg); color: var(--warnInk); font-size: 16px; font-weight: 500">{{authErr}}</div>
-      </sc-if>
-      <button onClick="{{connect}}" style="min-height: 58px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer">{{s.auConnectBtn}}</button>
-    </sc-if>
-
-    <sc-if value="{{a2}}" hint-placeholder-val="{{ false }}">
-      <h1 style="margin: 0; font-size: 24px">{{authTitle}}</h1>
-      <p style="margin: 0; color: var(--muted)">{{orgLine}}</p>
-      <sc-if value="{{isRegister}}" hint-placeholder-val="{{ false }}">
-        <label style="display: flex; flex-direction: column; gap: 8px; font-size: 16px; font-weight: 600">{{s.auName}}
-          <input value="{{fullName}}" onChange="{{onFullName}}" autocomplete="name" style="min-height: 56px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 18px">
-        </label>
-      </sc-if>
+    <sc-if value="{{a1}}" hint-placeholder-val="{{ true }}">
+      <h1 style="margin: 0; font-size: 24px">{{s.auTitle}}</h1>
+      <p style="margin: 0; color: var(--muted)">{{s.auHint}}</p>
       <label style="display: flex; flex-direction: column; gap: 8px; font-size: 16px; font-weight: 600">{{s.auEmail}}
         <input type="email" value="{{email}}" onChange="{{onEmail}}" autocomplete="email" style="min-height: 56px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 18px">
       </label>
@@ -505,11 +567,8 @@ body.bare #bar .only-wide { display: none; }
       <sc-if value="{{hasAuthErr}}" hint-placeholder-val="{{ false }}">
         <div role="alert" style="padding: 12px 16px; border-radius: 10px; background: var(--warnBg); color: var(--warnInk); font-size: 16px; font-weight: 500">{{authErr}}</div>
       </sc-if>
-      <button onClick="{{authSubmit}}" style="min-height: 58px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer">{{authTitle}}</button>
-      <button onClick="{{toggleAuthMode}}" style="min-height: 54px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{authToggle}}</button>
-      <sc-if value="{{isLogin}}" hint-placeholder-val="{{ false }}">
-        <button onClick="{{goForgot}}" style="align-self: center; min-height: 46px; padding: 0 12px; border: 0; background: transparent; color: var(--pri); font-family: inherit; font-size: 16px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer">{{s.auForgot}}</button>
-      </sc-if>
+      <button onClick="{{authSubmit}}" style="min-height: 58px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer">{{s.auBtn}}</button>
+      <button onClick="{{goForgot}}" style="align-self: center; min-height: 46px; padding: 0 12px; border: 0; background: transparent; color: var(--pri); font-family: inherit; font-size: 16px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer">{{s.auForgot}}</button>
     </sc-if>
 
     <sc-if value="{{a4}}" hint-placeholder-val="{{ false }}">
@@ -535,11 +594,11 @@ body.bare #bar .only-wide { display: none; }
       <h1 style="margin: 0; font-size: 24px">{{s.auDone}}</h1>
       <p style="margin: 0; color: var(--muted)">{{s.auDoneHint}}</p>
       <div style="display: flex; flex-direction: column; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface)">
-        <sc-for list="{{doneRows}}" as="row" hint-placeholder-count="3">
+        <sc-for list="{{doneRows}}" as="row" hint-placeholder-count="5">
           <div style="display: flex; justify-content: space-between; gap: 12px; padding: 13px 16px; border-bottom: 1px solid var(--line)"><span style="color: var(--muted)">{{row.label}}</span><span style="font-weight: 600; text-align: right">{{row.value}}</span></div>
         </sc-for>
       </div>
-      <button onClick="{{goProjects}}" style="min-height: 58px; border: 0; border-radius: 10px; background: var(--acc); color: var(--accText); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer">{{s.toProjects}}</button>
+      <button onClick="{{goWho}}" style="min-height: 58px; border: 0; border-radius: 10px; background: var(--acc); color: var(--accText); font-family: inherit; font-size: 18px; font-weight: 600; cursor: pointer">{{s.auNext}}</button>
     </sc-if>
   </div>
 </div>
@@ -547,22 +606,17 @@ body.bare #bar .only-wide { display: none; }
 
 <sc-if value="{{isSettings}}" hint-placeholder-val="{{ false }}">
 <div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column">
-  <header style="display: flex; align-items: center; gap: 12px; padding: 14px {{pad}}px; background: var(--surface); border-bottom: 1px solid var(--line)">
-    <button aria-label="{{s.back}}" onClick="{{goProjects}}" style="flex: none; width: 52px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
-    </button>
+  <header style="flex: none; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px {{pad}}px; box-sizing: border-box; background: var(--surface); border-bottom: 1px solid var(--line)">
     <div style="font-size: 21px; font-weight: 700">{{s.account}}</div>
   </header>
   <div style="flex: 1; min-height: 0; overflow: auto; padding: 20px {{pad}}px 28px">
     <div style="max-width: 640px; display: flex; flex-direction: column; gap: 20px">
       <div style="display: flex; flex-direction: column; border: 1.5px solid var(--line); border-radius: 12px; background: var(--surface)">
-        <sc-for list="{{accountRows}}" as="row" hint-placeholder-count="5">
-          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 13px 16px; border-bottom: 1px solid var(--line)"><span style="color: var(--muted)">{{row.label}}</span><span style="font-weight: 600; text-align: right">{{row.value}}</span></div>
+        <sc-for list="{{accountRows}}" as="row" hint-placeholder-count="6">
+          <div style="display: flex; justify-content: space-between; gap: 12px; padding: 13px 16px; border-bottom: 1px solid var(--line)"><span style="color: var(--muted)">{{row.label}}</span><span style="font-weight: 600; text-align: right; overflow-wrap: anywhere">{{row.value}}</span></div>
         </sc-for>
-        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 10px 10px 16px">
-          <span style="color: var(--muted)">{{s.syncRow}}: <span style="color: var(--ink); font-weight: 600">{{syncLabel}}</span></span>
-          <button onClick="{{syncNow}}" style="min-height: 46px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.syncNow}}</button>
-        </div>
+        <div style="padding: 13px 16px; border-bottom: 1px solid var(--line); color: var(--muted)">{{s.syncRow}}: <span style="color: var(--ink); font-weight: 600">{{syncLabel}}</span></div>
+        <div style="padding: 13px 16px; color: var(--muted)">{{licSyncLine}}</div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 10px">
         <div style="font-size: 16px; font-weight: 600">{{s.language}}</div>
@@ -572,74 +626,128 @@ body.bare #bar .only-wide { display: none; }
           </sc-for>
         </div>
       </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 10px">
-        <button onClick="{{goAdmin}}" style="flex: 1 1 200px; min-height: 56px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.admin}}</button>
-        <button onClick="{{logout}}" style="flex: 1 1 200px; min-height: 56px; border: 1.5px solid var(--danger); border-radius: 10px; background: transparent; color: var(--danger); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.logout}}</button>
-      </div>
+      <sc-if value="{{canLogout}}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{askLogout}}" style="align-self: flex-start; min-height: 52px; padding: 0 20px; border: 1.5px solid var(--danger); border-radius: 10px; background: transparent; color: var(--danger); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.logout}}</button>
+      </sc-if>
+      <sc-if value="{{confirmLogout}}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 10px; background: var(--warnBg); color: var(--warnInk)">
+          <div style="flex: 1 1 220px; font-weight: 600">{{s.logoutConfirm}}</div>
+          <button onClick="{{cancelLogout}}" style="min-height: 46px; padding: 0 16px; border: 1.5px solid var(--warnInk); border-radius: 10px; background: transparent; color: var(--warnInk); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.cancel}}</button>
+          <button onClick="{{logout}}" style="min-height: 46px; padding: 0 16px; border: 0; border-radius: 10px; background: #A32020; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.yesLogout}}</button>
+        </div>
+      </sc-if>
     </div>
   </div>
+  <footer style="flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px {{pad}}px; background: var(--surface); border-top: 1px solid var(--line)">
+    <button aria-label="{{s.back}}" onClick="{{goProjects}}" style="flex: none; min-width: 52px; height: 52px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+      <span style="display: {{wideDisplay}}">{{s.back}}</span>
+    </button>
+    <button onClick="{{goWho}}" style="flex: 1 1 auto; min-height: 52px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.switchUser}}</button>
+    <button onClick="{{syncNow}}" style="flex: 1 1 auto; min-height: 52px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.syncNow}}</button>
+    <button onClick="{{goAdmin}}" style="flex: 1 1 auto; min-height: 52px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.admin}}</button>
+  </footer>
 </div>
 </sc-if>
 
 <sc-if value="{{isAdmin}}" hint-placeholder-val="{{ false }}">
 <div style="position: absolute; top: {{top}}px; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column">
-  <header style="display: flex; align-items: center; gap: 12px; padding: 14px {{pad}}px; background: var(--surface); border-bottom: 1px solid var(--line)">
-    <button aria-label="{{s.back}}" onClick="{{goSettings}}" style="flex: none; width: 52px; height: 52px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
-    </button>
+  <header style="flex: none; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px {{pad}}px; box-sizing: border-box; background: var(--surface); border-bottom: 1px solid var(--line)">
     <div style="flex: 1; min-width: 0">
-      <div style="font-size: 15px; color: var(--muted)">{{s.admin}}</div>
+      <div style="font-size: 14px; color: var(--muted)">{{s.admin}}</div>
       <div style="font-size: 21px; font-weight: 700; overflow-wrap: anywhere">{{org.name}}</div>
     </div>
   </header>
   <div style="flex: 1; min-height: 0; overflow: auto; padding: 20px {{pad}}px 28px">
     <div style="display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start">
 
-      <section style="flex: 1 1 420px; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 20px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface)">
+      <div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<section style="min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 20px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface)">
         <h2 style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">{{s.adLicence}}</h2>
         <div style="font-size: 24px; font-weight: 700">{{licenceLine}}</div>
-        <div style="color: var(--muted)">{{seatsLine}}</div>
-        <div style="height: 12px; border-radius: 6px; background: var(--surface2); overflow: hidden"><div style="width: {{seatBar}}; height: 100%; background: var(--pri)"></div></div>
+        <div style="color: var(--muted)">{{slotsLine}}</div>
+        <div style="height: 12px; border-radius: 6px; background: var(--surface2); overflow: hidden"><div style="width: {{slotBar}}; height: 100%; background: var(--pri)"></div></div>
+        <div style="font-size: 15px; color: var(--muted)">{{s.adSyncHint}}</div>
+        <div style="font-size: 15px; color: var(--muted)">{{licSyncLine}}</div>
       </section>
-
-      <section style="flex: 1 1 420px; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 20px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface)">
-        <h2 style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">{{s.adCode}}</h2>
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px">
-          <div style="flex: 1 1 200px; font-family: 'IBM Plex Mono', monospace; font-size: 24px; font-weight: 500">{{org.code}}</div>
-          <button onClick="{{regenCode}}" style="min-height: 48px; padding: 0 16px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.adRegen}}</button>
+<section style="min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; padding: 20px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface)">
+        <h2 style="margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">{{s.adTags}}</h2>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{tagRows}}" as="tr" hint-placeholder-count="6">
+            <span style="display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 0 4px 0 14px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 16px; font-weight: 600">
+              {{tr.label}}
+              <button aria-label="{{tr.removeLabel}}" onClick="{{tr.remove}}" style="width: 36px; height: 36px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; display: inline-flex; align-items: center; justify-content: center">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+              </button>
+            </span>
+          </sc-for>
         </div>
-        <div style="color: var(--muted)">{{s.adCodeHint}}</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px">
+          <input aria-label="{{s.customTag}}" placeholder="{{s.customTag}}" value="{{newTag}}" onChange="{{onNewTag}}" onKeyDown="{{onNewTagKey}}" style="flex: 1 1 200px; min-width: 0; min-height: 50px; padding: 0 14px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font-family: inherit; font-size: 17px">
+          <button onClick="{{addTag}}" style="min-height: 50px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.add}}</button>
+        </div>
       </section>
-
-      <section style="flex: 1 1 420px; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; padding: 20px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface)">
-        <h2 style="margin: 0 0 6px; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">{{s.adPeople}}</h2>
-        <sc-for list="{{people}}" as="pp" hint-placeholder-count="4">
-          <div style="display: flex; align-items: center; gap: 12px; min-height: 66px; padding: 8px 0; border-top: 1px solid var(--line)">
-            <div style="flex: 1; min-width: 0"><div style="font-weight: 600">{{pp.name}}</div><div style="font-size: 15px; color: var(--muted)">{{pp.sub}}</div></div>
-            <sc-if value="{{pp.canToggle}}" hint-placeholder-val="{{ true }}">
-              <button onClick="{{pp.toggle}}" style="min-height: 46px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: {{pp.btnFg}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{pp.btnLabel}}</button>
+<section style="min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; padding: 20px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface)">
+        <h2 style="margin: 0 0 6px; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">{{devicesTitle}}</h2>
+        <sc-for list="{{deviceRows}}" as="dv" hint-placeholder-count="5">
+          <div style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 6px 0; border-top: 1px solid var(--line)">
+            <div style="flex: 1; min-width: 0"><div style="font-weight: 600">{{dv.name}}</div><div style="font-size: 14px; color: var(--muted)">{{dv.sub}}</div></div>
+            <sc-if value="{{dv.canRemove}}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{dv.remove}}" style="min-height: 46px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--danger); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.removeDevice}}</button>
             </sc-if>
           </div>
         </sc-for>
       </section>
-
-      <section style="flex: 1 1 420px; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; padding: 20px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface)">
-        <h2 style="margin: 0 0 6px; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">{{s.adDevices}}</h2>
-        <sc-for list="{{devices}}" as="dv" hint-placeholder-count="4">
-          <div style="display: flex; align-items: center; gap: 12px; min-height: 66px; padding: 8px 0; border-top: 1px solid var(--line)">
-            <div style="flex: 1; min-width: 0"><div style="font-weight: 600">{{dv.name}}</div><div style="font-size: 15px; color: var(--muted)">{{dv.sub}}</div></div>
-            <button onClick="{{dv.remove}}" style="min-height: 46px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{s.disconnect}}</button>
+</div>
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<section style="min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; padding: 20px; border: 1.5px solid var(--line); border-radius: 16px; background: var(--surface)">
+        <h2 style="margin: 0 0 6px; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted)">{{usersTitle}}</h2>
+        <sc-for list="{{userRows}}" as="pp" hint-placeholder-count="6">
+          <div style="display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 6px 0; border-top: 1px solid var(--line)">
+            <div style="flex: 1; min-width: 0"><div style="font-weight: 600; color: {{pp.fg}}">{{pp.name}}</div><div style="font-size: 14px; color: var(--muted)">{{pp.sub}}</div></div>
+            <button onClick="{{pp.toggle}}" style="min-height: 46px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: {{pp.btnFg}}; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">{{pp.btnLabel}}</button>
           </div>
         </sc-for>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; padding-top: 12px; border-top: 1px solid var(--line)">
+          <input aria-label="{{s.adUserPh}}" placeholder="{{s.adUserPh}}" value="{{newUser}}" onChange="{{onNewUser}}" onKeyDown="{{onNewUserKey}}" style="flex: 1 1 200px; min-width: 0; min-height: 50px; padding: 0 14px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font-family: inherit; font-size: 17px">
+          <button onClick="{{addUser}}" style="min-height: 50px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.add}}</button>
+        </div>
       </section>
+</div>
 
+    </div>
+  </div>
+  <footer style="flex: none; display: flex; align-items: center; gap: 10px; padding: 12px {{pad}}px; background: var(--surface); border-top: 1px solid var(--line)">
+    <button aria-label="{{s.back}}" onClick="{{leaveAdmin}}" style="flex: none; min-width: 52px; height: 52px; padding: 0 14px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+      <span style="display: {{wideDisplay}}">{{s.back}}</span>
+    </button>
+    <div style="margin-left: auto; font-size: 15px; color: var(--muted)">{{s.adSaved}}</div>
+  </footer>
+</div>
+</sc-if>
+
+<sc-if value="{{showUnlock}}" hint-placeholder-val="{{ false }}">
+<div style="position: absolute; inset: 0; background: rgba(8, 16, 14, 0.6); display: flex; align-items: flex-end; justify-content: center; padding: 16px">
+  <div role="dialog" aria-label="{{s.unlockTitle}}" style="width: 100%; max-width: 480px; box-sizing: border-box; padding: 24px; border-radius: 16px; background: var(--surface); display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 22px">{{s.unlockTitle}}</h2>
+    <p style="margin: 0; color: var(--muted)">{{unlockHint}}</p>
+    <label style="display: flex; flex-direction: column; gap: 8px; font-size: 16px; font-weight: 600">{{s.auPw}}
+      <input type="password" value="{{unlockPw}}" onChange="{{onUnlockPw}}" onKeyDown="{{onUnlockKey}}" style="min-height: 52px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font-family: inherit; font-size: 18px">
+    </label>
+    <sc-if value="{{unlockErr}}" hint-placeholder-val="{{ false }}">
+      <div role="alert" style="padding: 12px 16px; border-radius: 10px; background: var(--warnBg); color: var(--warnInk); font-size: 16px; font-weight: 500">{{s.unlockErr}}</div>
+    </sc-if>
+    <div style="display: flex; gap: 10px">
+      <button onClick="{{closeUnlock}}" style="flex: 1 1 0; min-height: 56px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.cancel}}</button>
+      <button onClick="{{unlock}}" style="flex: 1 1 0; min-height: 56px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.unlockBtn}}</button>
     </div>
   </div>
 </div>
 </sc-if>
 
 <sc-if value="{{showNew}}" hint-placeholder-val="{{ false }}">
-<div style="position: absolute; inset: 0; background: rgba(8, 16, 14, 0.6); display: flex; align-items: center; justify-content: center; padding: 16px">
+<div style="position: absolute; inset: 0; background: rgba(8, 16, 14, 0.6); display: flex; align-items: flex-end; justify-content: center; padding: 16px">
   <div role="dialog" aria-label="{{projDlgTitle}}" style="width: 100%; max-width: 480px; box-sizing: border-box; padding: 24px; border-radius: 16px; background: var(--surface); display: flex; flex-direction: column; gap: 16px">
     <h2 style="margin: 0; font-size: 22px">{{projDlgTitle}}</h2>
     <label style="display: flex; flex-direction: column; gap: 8px; font-size: 16px; font-weight: 600">{{s.projNum}}
@@ -648,10 +756,6 @@ body.bare #bar .only-wide { display: none; }
     <label style="display: flex; flex-direction: column; gap: 8px; font-size: 16px; font-weight: 600">{{s.projName}}
       <input value="{{newName}}" onChange="{{onNewName}}" style="min-height: 52px; padding: 0 16px; box-sizing: border-box; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font-family: inherit; font-size: 18px">
     </label>
-    <div style="display: flex; gap: 10px">
-      <button onClick="{{closeNew}}" style="flex: 1 1 0; min-height: 54px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.cancel}}</button>
-      <button onClick="{{createProject}}" style="flex: 1 1 0; min-height: 54px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{projDlgAction}}</button>
-    </div>
     <sc-if value="{{canProjDel}}" hint-placeholder-val="{{ false }}">
       <button onClick="{{askProjDel}}" style="min-height: 50px; border: 1.5px solid var(--danger); border-radius: 10px; background: transparent; color: var(--danger); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.delProject}}</button>
     </sc-if>
@@ -661,12 +765,16 @@ body.bare #bar .only-wide { display: none; }
         <button onClick="{{doProjDel}}" style="min-height: 46px; padding: 0 16px; border: 0; border-radius: 10px; background: #A32020; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{s.yesDelete}}</button>
       </div>
     </sc-if>
+    <div style="display: flex; gap: 10px">
+      <button onClick="{{closeNew}}" style="flex: 1 1 0; min-height: 56px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.cancel}}</button>
+      <button onClick="{{createProject}}" style="flex: 1 1 0; min-height: 56px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{projDlgAction}}</button>
+    </div>
   </div>
 </div>
 </sc-if>
 
 <sc-if value="{{showExport}}" hint-placeholder-val="{{ false }}">
-<div style="position: absolute; inset: 0; background: rgba(8, 16, 14, 0.6); display: flex; align-items: center; justify-content: center; padding: 16px">
+<div style="position: absolute; inset: 0; background: rgba(8, 16, 14, 0.6); display: flex; align-items: flex-end; justify-content: center; padding: 16px">
   <div role="dialog" aria-label="{{s.exportTitle}}" style="width: 100%; max-width: 520px; max-height: 100%; overflow: auto; box-sizing: border-box; padding: 24px; border-radius: 16px; background: var(--surface); display: flex; flex-direction: column; gap: 6px">
     <h2 style="margin: 0 0 8px; font-size: 22px">{{s.exportTitle}}</h2>
     <label style="display: flex; align-items: center; gap: 14px; min-height: 52px; font-size: 18px; font-weight: 600; cursor: pointer">
@@ -692,15 +800,15 @@ body.bare #bar .only-wide { display: none; }
       <input type="checkbox" checked="{{ex.report}}" onChange="{{togReport}}" style="width: 26px; height: 26px; accent-color: #0E5A7A">{{s.exReport}}
     </label>
     <div style="display: flex; gap: 10px; margin-top: 12px">
-      <button onClick="{{closeExport}}" style="flex: 1 1 0; min-height: 54px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.cancel}}</button>
-      <button onClick="{{doExport}}" style="flex: 1 1 0; min-height: 54px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.doExport}}</button>
+      <button onClick="{{closeExport}}" style="flex: 1 1 0; min-height: 56px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.cancel}}</button>
+      <button onClick="{{doExport}}" style="flex: 1 1 0; min-height: 56px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.doExport}}</button>
     </div>
   </div>
 </div>
 </sc-if>
 
 <sc-if value="{{exportDone}}" hint-placeholder-val="{{ false }}">
-<div style="position: absolute; inset: 0; background: rgba(8, 16, 14, 0.6); display: flex; align-items: center; justify-content: center; padding: 16px">
+<div style="position: absolute; inset: 0; background: rgba(8, 16, 14, 0.6); display: flex; align-items: flex-end; justify-content: center; padding: 16px">
   <div role="dialog" aria-label="{{s.exDoneTitle}}" style="width: 100%; max-width: 520px; max-height: 100%; overflow: auto; box-sizing: border-box; padding: 24px; border-radius: 16px; background: var(--surface); display: flex; flex-direction: column; gap: 14px">
     <h2 style="margin: 0; font-size: 22px">{{s.exDoneTitle}}</h2>
     <div style="display: flex; flex-direction: column; border: 1.5px solid var(--line); border-radius: 12px">
@@ -709,15 +817,15 @@ body.bare #bar .only-wide { display: none; }
       </sc-for>
     </div>
     <div style="display: flex; gap: 10px">
-      <button onClick="{{closeDone}}" style="flex: 1 1 0; min-height: 54px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.close}}</button>
-      <button onClick="{{demo}}" style="flex: 1 1 0; min-height: 54px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.share}}</button>
+      <button onClick="{{closeDone}}" style="flex: 1 1 0; min-height: 56px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.close}}</button>
+      <button onClick="{{demo}}" style="flex: 1 1 0; min-height: 56px; border: 0; border-radius: 10px; background: var(--pri); color: var(--priText); font-family: inherit; font-size: 17px; font-weight: 600; cursor: pointer">{{s.share}}</button>
     </div>
   </div>
 </div>
 </sc-if>
 
 <sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
-<div role="status" style="position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); padding: 12px 20px; border-radius: 10px; background: var(--ink); color: var(--bg); font-size: 16px; font-weight: 600; white-space: nowrap">{{toast}}</div>
+<div role="status" style="position: absolute; left: 50%; bottom: 100px; transform: translateX(-50%); max-width: 90%; padding: 12px 20px; border-radius: 10px; background: var(--ink); color: var(--bg); font-size: 16px; font-weight: 600; text-align: center">{{toast}}</div>
 </sc-if>
 
 </div>
@@ -864,32 +972,43 @@ class Component extends DCLogic {
     screen: null, tab: 'samples', q: '', pid: null,
     editPid: null, confirmProjDel: false, exportDone: false, photoId: null, forceRo: false,
     lang: null, pending: 0, planView: null, renameId: null, renameVal: '',
-    authStep: 1, authMode: 'login', code: '', email: '', pw: '', fullName: '', authErr: '',
-    org: { name: 'Muster Umweltanalytik GmbH', validUntil: '31.03.2027', seats: 5, code: 'TWX-7K4M-92QD' },
+    authStep: 1, email: '', pw: '', authErr: '',
+    currentUser: 'u1', userQ: '', confirmLogout: false,
+    adminUnlocked: false, showUnlock: false, unlockPw: '', unlockErr: false, newUser: '', newTag: '',
+    org: { name: 'Muster Umweltanalytik GmbH', email: 'geraete@muster-umwelt.de', validUntil: '31.03.2027', slots: 12, syncedAt: '2026-10-09, 07:58' },
     people: [
-      { id: 'u1', name: 'Erika Mustermann', role: 'admin', active: true },
-      { id: 'u2', name: 'Max Mustermann', role: 'member', active: true },
-      { id: 'u3', name: 'Lea Beispiel', role: 'member', active: true },
-      { id: 'u4', name: 'Jonas Beispiel', role: 'member', active: true }
+      { id: 'u1', name: 'Erika Mustermann', active: true },
+      { id: 'u2', name: 'Max Mustermann', active: true },
+      { id: 'u3', name: 'Lea Beispiel', active: true },
+      { id: 'u4', name: 'Jonas Beispiel', active: true },
+      { id: 'u5', name: 'Sofia Schmidt', active: true },
+      { id: 'u6', name: 'Tobias Wagner', active: true },
+      { id: 'u7', name: 'Anna Becker', active: true },
+      { id: 'u8', name: 'Lukas Hoffmann', active: true },
+      { id: 'u9', name: 'Marie Schulz', active: false },
+      { id: 'u10', name: 'Felix Koch', active: true }
     ],
     devices: [
-      { id: 'd1', name: 'iPad Feld 3', owner: 'u1', last: '2026-10-05, 11:02' },
-      { id: 'd2', name: 'iPhone', owner: 'u1', last: '2026-10-04, 18:15' },
-      { id: 'd3', name: 'Galaxy Tab Active', owner: 'u2', last: '2026-10-04, 16:40' },
-      { id: 'd4', name: 'iPad', owner: 'u3', last: '2026-09-26, 09:12' },
-      { id: 'd5', name: 'Galaxy Tab', owner: 'u4', last: '2026-10-02, 14:30' }
+      { id: 'd1', name: 'iPad Feld 03', last: '2026-10-09, 07:58', current: true },
+      { id: 'd2', name: 'iPad Feld 01', last: '2026-10-08, 16:12' },
+      { id: 'd3', name: 'iPad Feld 02', last: '2026-10-08, 15:40' },
+      { id: 'd4', name: 'Galaxy Tab Active 5', last: '2026-10-07, 11:05' },
+      { id: 'd5', name: 'iPhone 15 Büro', last: '2026-10-06, 09:30' },
+      { id: 'd6', name: 'iPad Feld 04', last: '2026-09-22, 14:18' },
+      { id: 'd7', name: 'Galaxy Tab S9', last: '2026-08-30, 10:02' }
     ],
+    tags: ['Fenster', 'Boden', 'Wand', 'Decke', 'Dach', 'Haustechnik', 'Innen', 'Außen', 'Rückstellprobe'],
     showNew: false, newNum: '', newName: '',
     showExport: false, ex: { plan: true, mode: 'annot', xlsx: true, csv: false, report: true },
-    step: 1, draft: null, custom: '', zoom: 1, confirmDel: false, toast: '', seq: 100,
+    step: 1, draft: null, custom: '', customTag: '', zoom: 1, confirmDel: false, toast: '', seq: 100,
     analytes: ['Asbest', 'PCB', 'PAK', 'KMF', 'Schwermetalle', 'Blei', 'MKW', 'PCP', 'Chlorid'],
     projects: [
       { id: 'a', num: 'HDB11011', name: 'WAK Mülheim an der Ruhr', changed: '2026-09-28, 11:00',
         plans: [{ id: 'a1', name: 'EG Grundriss.pdf' }, { id: 'a2', name: '1. OG Grundriss.pdf' }],
         samples: [
-          { id: 's1', room: 'Raum 12', num: 'IGN512820INS', analytes: ['PCB', 'Asbest'], planId: 'a1', x: 0.5, y: 0.2, photos: [{ id: 'f1', time: '10:42' }], desc: 'Fugenmasse am Fenster, spröde.', time: '2026-09-28, 10:42' },
-          { id: 's2', room: 'Raum 12', num: 'IGN512821INS', kind: 'mixed', analytes: ['KMF'], planId: 'a1', x: 0.58, y: 0.3, photos: [], desc: '', time: '2026-09-28, 10:51' },
-          { id: 's3', room: 'Technik', num: 'IGN512822INS', analytes: ['Asbest', 'PAK'], planId: 'a1', x: 0.22, y: 0.74, photos: [{ id: 'f2', time: '11:00' }, { id: 'f3', time: '11:00' }], desc: 'Rohrisolierung, Bogenstück.', time: '2026-09-28, 11:00' }
+          { id: 's1', room: 'Raum 12', num: 'IGN512820INS', kind: 'single', tags: ['Fenster', 'Innen'], analytes: ['PCB', 'Asbest'], planId: 'a1', x: 0.5, y: 0.2, photos: [{ id: 'f1', time: '10:42' }], desc: 'Fugenmasse am Fenster, spröde.', time: '2026-09-28, 10:42', by: 'u1' },
+          { id: 's2', room: 'Raum 12', num: 'IGN512821INS', kind: 'mixed', tags: ['Decke'], analytes: ['KMF'], planId: 'a1', x: 0.58, y: 0.3, photos: [], desc: '', time: '2026-09-28, 10:51', by: 'u1' },
+          { id: 's3', room: 'Technik', num: 'IGN512822INS', kind: 'single', tags: ['Haustechnik'], analytes: ['Asbest', 'PAK'], planId: 'a1', x: 0.22, y: 0.74, photos: [{ id: 'f2', time: '11:00' }, { id: 'f3', time: '11:00' }], desc: 'Rohrisolierung, Bogenstück.', time: '2026-09-28, 11:00', by: 'u2' }
         ] },
       { id: 'b', num: 'I220227', name: 'Beckenbach Fabrik', changed: '2026-09-21, 09:00', plans: [{ id: 'b1', name: 'Halle 2 Übersicht.pdf' }], samples: [] },
       { id: 'c', num: 'K310542', name: 'Schulzentrum Nord, Trakt B', changed: '2026-09-12, 14:20', plans: [], samples: [] }
@@ -901,13 +1020,19 @@ class Component extends DCLogic {
   strings(lang) {
     const de = {
       licence: 'Lizenz abgelaufen – nur Lesen und Export möglich.',
-      search: 'Projekt suchen', newProject: 'Neues Projekt', projects: 'Projekte', noProjects: 'Kein Projekt gefunden.',
-      unit: 'Proben', back: 'Zurück', exportBtn: 'Exportieren', newSample: 'Neue Probe', editSample: 'Probe bearbeiten',
+      whoTitle: 'Wer arbeitet mit diesem Gerät?', whoLast: 'Zuletzt angemeldet', whoFirst: 'Bitte wählen Sie Ihren Namen aus der Liste.',
+      continueAs: 'Weiter als', whoOthers: 'Oder Ihren Namen wählen', whoAll: 'Ihren Namen wählen', whoSearch: 'Name suchen',
+      whoNone: 'Kein Name gefunden. Neue Personen legt die Verwaltung an.', licSync: 'Lizenz und Benutzerliste aktualisiert',
+      switchUser: 'Benutzer wechseln', toastUser: 'Angemeldet als',
+      search: 'Projekt suchen', newProject: 'Neues Projekt', projShort: 'Projekt', projects: 'Projekte', noProjects: 'Kein Projekt gefunden.',
+      unit: 'Proben', back: 'Zurück', exportBtn: 'Exportieren', exportShort: 'Export', newSample: 'Neue Probe', sampleShort: 'Probe', editSample: 'Probe bearbeiten',
       tabSamples: 'Proben', tabTable: 'Tabelle', tabPlans: 'Pläne', noSamples: 'Noch keine Proben. Legen Sie die erste Probe an.',
-      thRoom: 'Raum', thNum: 'Probe', thKind: 'Art', kind: 'Probenart', kindSingle: 'Einzelprobe', kindMixed: 'Mischprobe', kindSingleHint: 'ein Material', kindMixedHint: 'mehrere Proben / Materialien', thAnalysis: 'Analyse', thDate: 'Datum', thPhotos: 'Fotos', thPlan: 'Plan',
+      thRoom: 'Raum', thNum: 'Probe', thKind: 'Art', thAnalysis: 'Analyse', thTags: 'Tags', thBy: 'Probenehmer', thDate: 'Datum', thPhotos: 'Fotos', thPlan: 'Plan',
+      kind: 'Probenart', kindSingle: 'Einzelprobe', kindMixed: 'Mischprobe', kindSingleHint: 'ein Material', kindMixedHint: 'mehrere Proben / Materialien',
+      tags: 'Tags', customTag: 'Neuer Tag', by: 'Probenehmer',
       rename: 'Umbenennen', replace: 'Ersetzen', addPdf: 'PDF hinzufügen', markers: 'Markierungen',
       cancel: 'Abbrechen', create: 'Anlegen', projNum: 'Projektnummer', projName: 'Bezeichnung',
-      st1: 'Ort & Nummer', st2: 'Analyse', st3: 'Plan', st4: 'Fotos', st5: 'Prüfen',
+      steps: 'Schritte', st1: 'Ort & Nummer', st2: 'Analyse', st3: 'Plan', st4: 'Fotos', st5: 'Prüfen',
       room: 'Raum / Ort', roomPh: 'z. B. Raum 12, Flur EG', recent: 'Zuletzt verwendet', sampleNo: 'Probennummer', scan: 'Code scannen',
       dupWarn: 'Diese Probennummer gibt es im Projekt bereits.',
       analyseFor: 'Analysieren auf', customAnalyte: 'Eigener Parameter', add: 'Hinzufügen',
@@ -915,44 +1040,52 @@ class Component extends DCLogic {
       takePhoto: 'Foto aufnehmen', fromGallery: 'Aus Galerie', noPhotos: 'Noch keine Fotos.', remove: 'Entfernen', photo: 'Foto',
       desc: 'Beschreibung', descPh: 'Material, Zustand, Besonderheiten', edit: 'Ändern',
       rvRoom: 'Raum / Ort', rvNum: 'Probennummer', rvAnalysis: 'Analyse', rvPlan: 'Plan', rvPhotos: 'Fotos', marked: 'markiert', noMarker: 'ohne Markierung',
-      save: 'Speichern', saveNext: 'Speichern & nächste Probe', skip: 'Überspringen', next: 'Weiter',
+      save: 'Speichern', saveNext: 'Speichern & nächste Probe', saveNextShort: 'Speichern & weiter', skip: 'Überspringen', next: 'Weiter',
       del: 'Probe löschen', delConfirm: 'Probe wirklich löschen?', yesDelete: 'Ja, löschen',
       exportTitle: 'Projekt exportieren', exPlan: 'Pläne mit Markierungen (PDF)', exAnnot: 'Als PDF-Anmerkungen (bearbeitbar)', exFlat: 'Fest eingebrannt (nicht veränderbar)',
       exXlsx: 'Probenliste (Excel)', exCsv: 'Probenliste (CSV)', exReport: 'Bericht mit Fotos (PDF)', doExport: 'Export erstellen',
-      toastExport: 'Export erstellt (Demo)', toastDemo: 'In der Demo nicht verfügbar', toastSaved: 'Probe gespeichert', created: 'Erfasst', yes: 'Ja', room0: 'Raum', sample0: 'Probe',
-      account: 'Konto', synced: 'Synchronisiert', pendingSuffix: 'Änderungen warten', syncNow: 'Jetzt synchronisieren', syncRow: 'Synchronisierung',
-      auStep: 'Schritt', of: 'von', auConnect: 'Organisation verbinden',
-      auConnectHint: 'Geben Sie den Verbindungscode Ihrer Organisation ein. Sie erhalten ihn von Ihrer Administration.',
-      auCode: 'Verbindungscode', auConnectBtn: 'Verbinden', auCodeErr: 'Bitte geben Sie den Verbindungscode ein.',
-      auFull: 'Alle Plätze Ihrer Organisation sind belegt. Bitte wenden Sie sich an Ihre Administration.',
-      auLogin: 'Anmelden', auRegister: 'Konto erstellen', auName: 'Name', auEmail: 'E-Mail', auPw: 'Passwort',
-      auToRegister: 'Neues Konto erstellen', auToLogin: 'Ich habe schon ein Konto', auForgot: 'Passwort vergessen?',
-      seatsFree: 'Freie Plätze', auFieldErr: 'Bitte E-Mail und Passwort eingeben.',
-      auDone: 'Gerät registriert', auDoneHint: 'Dieses Gerät ist jetzt mit Ihrem Konto verknüpft und funktioniert auch ohne Verbindung.',
-      auDevice: 'Gerät', auDevices: 'Geräte dieses Kontos', validUntil: 'Lizenz gültig bis', toProjects: 'Zu den Projekten',
-      setName: 'Name', setOrg: 'Organisation', setRole: 'Rolle', roleAdmin: 'Administration', roleMember: 'Mitarbeit',
-      language: 'Sprache', admin: 'Verwaltung', logout: 'Abmelden',
-      adLicence: 'Lizenz', adActiveUntil: 'Aktiv bis', adExpired: 'Abgelaufen am', adSeats: 'Plätzen belegt', adPerUser: 'bis zu 2 Geräte pro Person',
-      adCode: 'Verbindungscode', adRegen: 'Neu erzeugen',
-      adCodeHint: 'Für neue Geräte. Ein neuer Code macht den alten ungültig; verbundene Geräte bleiben angemeldet.',
-      adPeople: 'Personen', adDevices: 'Geräte', deactivate: 'Deaktivieren', activate: 'Aktivieren', inactive: 'deaktiviert',
-      disconnect: 'Trennen', devicesWord: 'Geräte', lastSync: 'zuletzt synchronisiert',
-      toastNoSeat: 'Kein Platz frei', toastReplaced: 'PDF ersetzt, Markierungen bleiben erhalten', toastLang: 'In der Demo nur Deutsch und Englisch', ok: 'OK',
+      toastExport: 'Export erstellt (Demo)', toastDemo: 'In der Demo nicht verfügbar', toastSaved: 'Probe gespeichert', created: 'Erfasst', yes: 'Ja', sample0: 'Probe',
+      account: 'Einstellungen', synced: 'Synchronisiert', pendingSuffix: 'Änderungen warten', syncNow: 'Jetzt synchronisieren', syncRow: 'Synchronisierung',
+      toastSynced: 'Synchronisiert: Proben, Lizenz, Benutzer und Tags',
+      auTitle: 'Gerät anmelden', auHint: 'Melden Sie das Gerät mit dem Firmenkonto an. Alle Geräte Ihres Unternehmens nutzen dasselbe Konto.',
+      auEmail: 'E-Mail des Firmenkontos', auPw: 'Passwort', auBtn: 'Gerät anmelden', auForgot: 'Passwort vergessen?',
+      auFieldErr: 'Bitte E-Mail und Passwort eingeben.',
+      auFull: 'Alle Geräteplätze dieses Kontos sind belegt. Geben Sie in der Verwaltung auf einem anderen Gerät einen Platz frei oder wenden Sie sich an Twalix.',
+      auDone: 'Gerät angemeldet', auDoneHint: 'Lizenz und Benutzerliste wurden geladen. Das Gerät funktioniert ab jetzt auch ohne Verbindung.', auNext: 'Weiter',
+      setUser: 'Benutzer', setAccount: 'Firmenkonto', setOrg: 'Organisation', auDevice: 'Gerät', slots: 'Geräteplätze', slotsUsed: 'belegt', of: 'von',
+      validUntil: 'Lizenz gültig bis', usersLoaded: 'aktiv',
+      language: 'Sprache', admin: 'Verwaltung', logout: 'Gerät abmelden', yesLogout: 'Ja, abmelden',
+      logoutConfirm: 'Gerät wirklich abmelden? Der Geräteplatz wird frei.',
+      unlockTitle: 'Verwaltung entsperren', unlockHintPre: 'Passwort des Firmenkontos', unlockBtn: 'Entsperren', unlockErr: 'Bitte Passwort eingeben.',
+      adLicence: 'Lizenz', adActiveUntil: 'Aktiv bis', adExpired: 'Abgelaufen am',
+      adSyncHint: 'Lizenz, Benutzer und Tags werden bei jeder Synchronisierung auf alle Geräte übertragen.',
+      adUsers: 'Benutzer', adUserPh: 'Vor- und Nachname', adTags: 'Tags (für alle Geräte)', adDevices: 'Geräte',
+      adSaved: 'Änderungen gehen mit der nächsten Synchronisierung an alle Geräte.',
+      thisDevice: 'Dieses Gerät', removeDevice: 'Entfernen', toastDevRemoved: 'Gerät entfernt – Platz frei',
+      deactivate: 'Deaktivieren', activate: 'Aktivieren', inactive: 'deaktiviert', current: 'aktuell an diesem Gerät',
+      lastSync: 'zuletzt synchronisiert', removeTag: 'Tag entfernen',
+      toastReplaced: 'PDF ersetzt, Markierungen bleiben erhalten', toastLang: 'In der Demo nur Deutsch und Englisch', ok: 'OK',
       scanTitle: 'Code scannen', scanHint: 'Barcode oder QR-Code in den Rahmen halten.', scanManual: 'Manuell eingeben', scanDetect: 'Code erkennen (Demo)',
       photoOpen: 'Foto ansehen', editProject: 'Projekt bearbeiten', delProject: 'Projekt löschen', delProjectConfirm: 'Projekt mit allen Proben löschen?',
-      fgTitle: 'Passwort zurücksetzen', fgHint: 'Wir senden Ihnen einen Link zum Zurücksetzen des Passworts.', fgSend: 'Link senden',
-      fgSentTitle: 'E-Mail gesendet', fgSentHint: 'Bitte prüfen Sie Ihr Postfach und folgen Sie dem Link.', fgBack: 'Zurück zur Anmeldung', fgErr: 'Bitte E-Mail eingeben.',
+      fgTitle: 'Passwort zurücksetzen', fgHint: 'Wir senden einen Link zum Zurücksetzen an die E-Mail des Firmenkontos.', fgSend: 'Link senden',
+      fgSentTitle: 'E-Mail gesendet', fgSentHint: 'Bitte prüfen Sie das Postfach und folgen Sie dem Link.', fgBack: 'Zurück zur Anmeldung', fgErr: 'Bitte E-Mail eingeben.',
       exDoneTitle: 'Export fertig', share: 'Teilen', close: 'Schließen', exFileList: 'Proben', exFileReport: 'Bericht'
     };
     const en = {
       licence: 'Licence expired – read and export only.',
-      search: 'Search projects', newProject: 'New project', projects: 'Projects', noProjects: 'No project found.',
-      unit: 'samples', back: 'Back', exportBtn: 'Export', newSample: 'New sample', editSample: 'Edit sample',
+      whoTitle: 'Who is using this device?', whoLast: 'Last signed in', whoFirst: 'Please pick your name from the list.',
+      continueAs: 'Continue as', whoOthers: 'Or pick your name', whoAll: 'Pick your name', whoSearch: 'Search name',
+      whoNone: 'No name found. New people are added in Administration.', licSync: 'Licence and user list updated',
+      switchUser: 'Switch user', toastUser: 'Signed in as',
+      search: 'Search projects', newProject: 'New project', projShort: 'Project', projects: 'Projects', noProjects: 'No project found.',
+      unit: 'samples', back: 'Back', exportBtn: 'Export', exportShort: 'Export', newSample: 'New sample', sampleShort: 'Sample', editSample: 'Edit sample',
       tabSamples: 'Samples', tabTable: 'Table', tabPlans: 'Plans', noSamples: 'No samples yet. Add the first one.',
-      thRoom: 'Room', thNum: 'Sample', thKind: 'Type', kind: 'Sample type', kindSingle: 'Single sample', kindMixed: 'Composite sample', kindSingleHint: 'one material', kindMixedHint: 'several samples / materials', thAnalysis: 'Analysis', thDate: 'Date', thPhotos: 'Photos', thPlan: 'Plan',
+      thRoom: 'Room', thNum: 'Sample', thKind: 'Type', thAnalysis: 'Analysis', thTags: 'Tags', thBy: 'Sampled by', thDate: 'Date', thPhotos: 'Photos', thPlan: 'Plan',
+      kind: 'Sample type', kindSingle: 'Single sample', kindMixed: 'Composite sample', kindSingleHint: 'one material', kindMixedHint: 'several samples / materials',
+      tags: 'Tags', customTag: 'New tag', by: 'Sampled by',
       rename: 'Rename', replace: 'Replace', addPdf: 'Add PDF', markers: 'markers',
       cancel: 'Cancel', create: 'Create', projNum: 'Project number', projName: 'Name',
-      st1: 'Location & no.', st2: 'Analysis', st3: 'Plan', st4: 'Photos', st5: 'Review',
+      steps: 'Steps', st1: 'Location & no.', st2: 'Analysis', st3: 'Plan', st4: 'Photos', st5: 'Review',
       room: 'Room / location', roomPh: 'e.g. Room 12, ground-floor corridor', recent: 'Recently used', sampleNo: 'Sample number', scan: 'Scan code',
       dupWarn: 'This sample number already exists in the project.',
       analyseFor: 'Analyse for', customAnalyte: 'Custom parameter', add: 'Add',
@@ -960,33 +1093,35 @@ class Component extends DCLogic {
       takePhoto: 'Take photo', fromGallery: 'From gallery', noPhotos: 'No photos yet.', remove: 'Remove', photo: 'Photo',
       desc: 'Description', descPh: 'Material, condition, remarks', edit: 'Edit',
       rvRoom: 'Room / location', rvNum: 'Sample number', rvAnalysis: 'Analysis', rvPlan: 'Plan', rvPhotos: 'Photos', marked: 'marked', noMarker: 'no marker',
-      save: 'Save', saveNext: 'Save & next sample', skip: 'Skip', next: 'Next',
+      save: 'Save', saveNext: 'Save & next sample', saveNextShort: 'Save & next', skip: 'Skip', next: 'Next',
       del: 'Delete sample', delConfirm: 'Really delete this sample?', yesDelete: 'Yes, delete',
       exportTitle: 'Export project', exPlan: 'Plans with markers (PDF)', exAnnot: 'As PDF annotations (editable)', exFlat: 'Flattened (cannot be changed)',
       exXlsx: 'Sample list (Excel)', exCsv: 'Sample list (CSV)', exReport: 'Report with photos (PDF)', doExport: 'Create export',
-      toastExport: 'Export created (demo)', toastDemo: 'Not available in the demo', toastSaved: 'Sample saved', created: 'Recorded', yes: 'Yes', room0: 'Room', sample0: 'Sample',
-      account: 'Account', synced: 'Synced', pendingSuffix: 'changes waiting', syncNow: 'Sync now', syncRow: 'Sync',
-      auStep: 'Step', of: 'of', auConnect: 'Connect organisation',
-      auConnectHint: 'Enter your organisation’s connection code. Your administrator can give it to you.',
-      auCode: 'Connection code', auConnectBtn: 'Connect', auCodeErr: 'Please enter the connection code.',
-      auFull: 'All seats of your organisation are taken. Please contact your administrator.',
-      auLogin: 'Sign in', auRegister: 'Create account', auName: 'Name', auEmail: 'Email', auPw: 'Password',
-      auToRegister: 'Create a new account', auToLogin: 'I already have an account', auForgot: 'Forgot password?',
-      seatsFree: 'Free seats', auFieldErr: 'Please enter email and password.',
-      auDone: 'Device registered', auDoneHint: 'This device is now linked to your account and also works without a connection.',
-      auDevice: 'Device', auDevices: 'Devices on this account', validUntil: 'Licence valid until', toProjects: 'Go to projects',
-      setName: 'Name', setOrg: 'Organisation', setRole: 'Role', roleAdmin: 'Administrator', roleMember: 'Member',
-      language: 'Language', admin: 'Administration', logout: 'Sign out',
-      adLicence: 'Licence', adActiveUntil: 'Active until', adExpired: 'Expired on', adSeats: 'seats taken', adPerUser: 'up to 2 devices per person',
-      adCode: 'Connection code', adRegen: 'Regenerate',
-      adCodeHint: 'For new devices. A new code invalidates the old one; connected devices stay signed in.',
-      adPeople: 'People', adDevices: 'Devices', deactivate: 'Deactivate', activate: 'Activate', inactive: 'deactivated',
-      disconnect: 'Disconnect', devicesWord: 'devices', lastSync: 'last synced',
-      toastNoSeat: 'No free seat', toastReplaced: 'PDF replaced, markers are kept', toastLang: 'Demo offers German and English only', ok: 'OK',
+      toastExport: 'Export created (demo)', toastDemo: 'Not available in the demo', toastSaved: 'Sample saved', created: 'Recorded', yes: 'Yes', sample0: 'Sample',
+      account: 'Settings', synced: 'Synced', pendingSuffix: 'changes waiting', syncNow: 'Sync now', syncRow: 'Sync',
+      toastSynced: 'Synced: samples, licence, users and tags',
+      auTitle: 'Register device', auHint: 'Sign the device in with the company account. All devices of your company use the same account.',
+      auEmail: 'Company account email', auPw: 'Password', auBtn: 'Register device', auForgot: 'Forgot password?',
+      auFieldErr: 'Please enter email and password.',
+      auFull: 'All device slots of this account are taken. Free a slot in Administration on another device or contact Twalix.',
+      auDone: 'Device registered', auDoneHint: 'Licence and user list are loaded. From now on the device also works offline.', auNext: 'Continue',
+      setUser: 'User', setAccount: 'Company account', setOrg: 'Organisation', auDevice: 'Device', slots: 'Device slots', slotsUsed: 'taken', of: 'of',
+      validUntil: 'Licence valid until', usersLoaded: 'active',
+      language: 'Language', admin: 'Administration', logout: 'Sign out device', yesLogout: 'Yes, sign out',
+      logoutConfirm: 'Really sign out this device? Its slot becomes free.',
+      unlockTitle: 'Unlock administration', unlockHintPre: 'Password of the company account', unlockBtn: 'Unlock', unlockErr: 'Please enter the password.',
+      adLicence: 'Licence', adActiveUntil: 'Active until', adExpired: 'Expired on',
+      adSyncHint: 'Licence, users and tags are sent to all devices with every sync.',
+      adUsers: 'Users', adUserPh: 'First and last name', adTags: 'Tags (for all devices)', adDevices: 'Devices',
+      adSaved: 'Changes reach all devices with the next sync.',
+      thisDevice: 'This device', removeDevice: 'Remove', toastDevRemoved: 'Device removed – slot free',
+      deactivate: 'Deactivate', activate: 'Activate', inactive: 'deactivated', current: 'currently on this device',
+      lastSync: 'last synced', removeTag: 'Remove tag',
+      toastReplaced: 'PDF replaced, markers are kept', toastLang: 'Demo offers German and English only', ok: 'OK',
       scanTitle: 'Scan code', scanHint: 'Hold the barcode or QR code inside the frame.', scanManual: 'Enter manually', scanDetect: 'Detect code (demo)',
       photoOpen: 'View photo', editProject: 'Edit project', delProject: 'Delete project', delProjectConfirm: 'Delete the project with all its samples?',
-      fgTitle: 'Reset password', fgHint: 'We will send you a link to reset your password.', fgSend: 'Send link',
-      fgSentTitle: 'Email sent', fgSentHint: 'Please check your inbox and follow the link.', fgBack: 'Back to sign-in', fgErr: 'Please enter your email.',
+      fgTitle: 'Reset password', fgHint: 'We will send a reset link to the company account email.', fgSend: 'Send link',
+      fgSentTitle: 'Email sent', fgSentHint: 'Please check the inbox and follow the link.', fgBack: 'Back to sign-in', fgErr: 'Please enter the email.',
       exDoneTitle: 'Export ready', share: 'Share', close: 'Close', exFileList: 'Samples', exFileReport: 'Report'
     };
     return lang === 'en' ? en : de;
@@ -1021,12 +1156,12 @@ class Component extends DCLogic {
 
   blankDraft(project, room) {
     const first = project.plans[0];
-    return { id: null, room: room || '', num: '', kind: 'single', analytes: [], planId: first ? first.id : null, x: null, y: null, prev: null, photos: [], desc: '', time: this.now() };
+    return { id: null, room: room || '', num: '', kind: 'single', tags: [], analytes: [], planId: first ? first.id : null, x: null, y: null, prev: null, photos: [], desc: '', time: this.now(), by: this.state.currentUser };
   }
 
   commit(andNext) {
     const st = this.state, d = st.draft, time = this.now();
-    const sample = { id: d.id || 'n' + st.seq, room: d.room, num: d.num, kind: d.kind || 'single', analytes: d.analytes, planId: d.planId, x: d.x, y: d.y, photos: d.photos, desc: d.desc, time: d.time };
+    const sample = { id: d.id || 'n' + st.seq, room: d.room, num: d.num, kind: d.kind || 'single', tags: d.tags || [], analytes: d.analytes, planId: d.planId, x: d.x, y: d.y, photos: d.photos, desc: d.desc, time: d.time, by: d.by || st.currentUser };
     let updated = null;
     const projects = st.projects.map((p) => {
       if (p.id !== st.pid) return p;
@@ -1044,15 +1179,16 @@ class Component extends DCLogic {
   }
 
   preset(name) {
-    const D = (o) => Object.assign({ id: null, room: '', num: '', kind: 'single', analytes: [], planId: 'a1', x: null, y: null, prev: null, photos: [], desc: '', time: '2026-10-05, 09:30' }, o);
+    const D = (o) => Object.assign({ id: null, room: '', num: '', kind: 'single', tags: [], analytes: [], planId: 'a1', x: null, y: null, prev: null, photos: [], desc: '', time: '2026-10-09, 09:30', by: 'u1' }, o);
     const wiz = (step, o) => ({ screen: 'wizard', pid: 'a', step: step, draft: D(o) });
-    const rn = { room: 'Raum 13', num: 'IGN512823INS' };
+    const rn = { room: 'Raum 13', num: 'IGN512823INS', tags: ['Boden', 'Innen'] };
     const an = Object.assign({}, rn, { analytes: ['Asbest', 'KMF'] });
     const mk = Object.assign({}, an, { x: 0.8, y: 0.18 });
     const full = Object.assign({}, mk, { photos: [{ id: 'q1', time: '09:34' }, { id: 'q2', time: '09:35' }], desc: 'Bodenbelag, Kleber dunkel.' });
     const first = this.state.projects[0].samples[0];
-    const mail = 'erika.mustermann@example.com';
     const map = {
+      'who': { screen: 'who' },
+      'who-first': { screen: 'who', currentUser: null },
       'projects': { screen: 'projects' },
       'new-project': { screen: 'projects', showNew: true, newNum: 'L410118', newName: 'Rathaus Altbau' },
       'project-edit': { screen: 'project', pid: 'a', showNew: true, editPid: 'a', newNum: 'HDB11011', newName: 'WAK Mülheim an der Ruhr' },
@@ -1062,7 +1198,6 @@ class Component extends DCLogic {
       'project-plans': { screen: 'project', pid: 'a', tab: 'plans' },
       'plan-view': { screen: 'plan', pid: 'a', planView: 'a1' },
       'w1': wiz(1, rn),
-      'scanner': Object.assign(wiz(1, { room: 'Raum 13' }), { screen: 'scan' }),
       'w2': wiz(2, an),
       'w3': wiz(3, mk),
       'w4': wiz(4, full),
@@ -1071,14 +1206,13 @@ class Component extends DCLogic {
       'w5-delete': { screen: 'wizard', pid: 'a', step: 5, confirmDel: true, draft: Object.assign({}, first, { prev: null }) },
       'export': { screen: 'project', pid: 'a', showExport: true },
       'export-done': { screen: 'project', pid: 'a', exportDone: true },
-      'auth1': { screen: 'auth', authStep: 1, code: 'TWX-7K4M-92QD' },
-      'auth1-full': { screen: 'auth', authStep: 1, code: 'TWX-7K4M-92QD', authErr: 'auFull' },
-      'auth2': { screen: 'auth', authStep: 2, authMode: 'login', email: mail, pw: 'musterpasswort' },
-      'auth2-register': { screen: 'auth', authStep: 2, authMode: 'register', fullName: 'Erika Mustermann', email: mail, pw: 'musterpasswort' },
-      'forgot': { screen: 'auth', authStep: 4, email: mail },
+      'auth1': { screen: 'auth', authStep: 1, email: 'geraete@muster-umwelt.de', pw: 'musterpasswort' },
+      'auth1-full': { screen: 'auth', authStep: 1, email: 'geraete@muster-umwelt.de', pw: 'musterpasswort', authErr: 'auFull' },
+      'forgot': { screen: 'auth', authStep: 4, email: 'geraete@muster-umwelt.de' },
       'auth3': { screen: 'auth', authStep: 3 },
       'settings': { screen: 'settings' },
-      'admin': { screen: 'admin' },
+      'unlock': { screen: 'settings', showUnlock: true },
+      'admin': { screen: 'admin', adminUnlocked: true },
       'expired': { screen: 'projects', forceRo: true }
     };
     return map[name] || null;
@@ -1096,17 +1230,37 @@ class Component extends DCLogic {
     const s = this.strings(lang);
     const ro = !!P.licenseExpired || !!st.forceRo;
     const cur = this.cur();
-    const screen = st.screen ?? P.start ?? 'projects';
-    const d = st.draft || { room: '', num: '', kind: 'single', analytes: [], photos: [], desc: '', planId: null, x: null, y: null, time: '' };
+    const startScreen = { auth: 'auth', settings: 'settings', admin: 'admin' }[P.start] || 'who';
+    const screen = st.screen ?? startScreen;
+    const adminOpen = st.adminUnlocked || (st.screen == null && P.start === 'admin');
+    const d = st.draft || { room: '', num: '', kind: 'single', tags: [], analytes: [], photos: [], desc: '', planId: null, x: null, y: null, time: '', by: null };
     const chip = (on) => (on
       ? { on: true, bg: 'var(--pri)', fg: 'var(--priText)', bd: 'var(--pri)' }
       : { on: false, bg: 'var(--surface)', fg: 'var(--ink)', bd: 'var(--line)' });
+    const toggleIn = (list, v) => (list.indexOf(v) >= 0 ? list.filter((x) => x !== v) : list.concat([v]));
 
     const themeStyle = Object.assign({
       position: 'relative', width: '100%', height: '100%', overflow: 'hidden', boxSizing: 'border-box',
       fontFamily: "'IBM Plex Sans', system-ui, sans-serif", fontSize: 17, lineHeight: 1.4,
       color: 'var(--ink)', background: 'var(--bg)'
     }, this.themeVars((P.theme ?? 'light') === 'dark'));
+
+    const people = st.people;
+    const initials = (n) => n.split(/\s+/).filter(Boolean).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+    const personName = (id) => { const p = people.find((x) => x.id === id); return p ? p.name : '—'; };
+    const curPerson = people.find((p) => p.id === st.currentUser && p.active) || null;
+    const pickUser = (p) => { this.setState({ currentUser: p.id, screen: 'projects', userQ: '' }); this.flash(s.toastUser + ' ' + p.name); };
+    const uq = st.userQ.trim().toLowerCase();
+    const whoList = people
+      .filter((p) => p.active && p.id !== (curPerson ? curPerson.id : null) && (!uq || p.name.toLowerCase().indexOf(uq) >= 0))
+      .map((p) => ({ name: p.name, initials: initials(p.name), pick: () => pickUser(p) }));
+
+    const devName = (dv) => (dv.current ? (phone ? 'iPhone Feld' : 'iPad Feld 03') : dv.name);
+    const thisDev = st.devices.find((x) => x.current);
+    const used = st.devices.length, slots = st.org.slots;
+    const slotsText = used + ' ' + s.of + ' ' + slots + ' ' + s.slotsUsed;
+    const activeCount = people.filter((p) => p.active).length;
+    const licSyncLine = s.licSync + ': ' + st.org.syncedAt;
 
     const q = st.q.trim().toLowerCase();
     const projects = st.projects
@@ -1116,10 +1270,10 @@ class Component extends DCLogic {
 
     const planName = (id) => { const pl = cur && cur.plans.find((x) => x.id === id); return pl ? pl.name : ''; };
     const samples = (cur ? cur.samples : []).map((x) => ({
-      room: x.room || '—', num: x.num || '—', kind: x.kind === 'mixed' ? s.kindMixed : s.kindSingle, analytes: x.analytes.join(', ') || '—', time: x.time,
+      room: x.room || '—', num: x.num || '—', kind: x.kind === 'mixed' ? s.kindMixed : s.kindSingle, analytes: x.analytes.join(', ') || '—',
+      tags: (x.tags || []).join(', ') || '—', by: personName(x.by), time: x.time,
       photoCount: String(x.photos.length), planMark: x.x != null ? s.yes : '—',
-      meta: x.photos.length + ' ' + s.thPhotos + (x.x != null ? ' · ' + s.thPlan : ''),
-      open: () => this.setState({ screen: 'wizard', step: 5, zoom: 1, confirmDel: false, draft: Object.assign({}, x, { prev: null }) })
+      open: () => this.setState({ screen: 'wizard', step: 5, zoom: 1, confirmDel: false, draft: Object.assign({ tags: [] }, x, { prev: null }) })
     }));
 
     const tabs = [['samples', s.tabSamples], ['table', s.tabTable], ['plans', s.tabPlans]].map((t) =>
@@ -1138,35 +1292,45 @@ class Component extends DCLogic {
     };
     const pvPlan = cur ? cur.plans.find((pl) => pl.id === st.planView) : null;
 
-    const used = st.people.filter((p) => p.active).length;
-    const free = st.org.seats - used;
-    const ownerName = (id) => { const p = st.people.find((x) => x.id === id); return p ? p.name : ''; };
-    const people = st.people.map((p) => ({
-      name: p.name,
-      sub: (p.role === 'admin' ? s.roleAdmin : s.roleMember) + ' · ' + st.devices.filter((x) => x.owner === p.id).length + ' ' + s.devicesWord + (p.active ? '' : ' · ' + s.inactive),
-      canToggle: p.role !== 'admin', btnLabel: p.active ? s.deactivate : s.activate, btnFg: p.active ? 'var(--danger)' : 'var(--ink)',
-      toggle: () => {
-        if (!p.active && free <= 0) { this.flash(s.toastNoSeat); return; }
-        this.setState({ people: st.people.map((x) => (x.id === p.id ? Object.assign({}, x, { active: !x.active }) : x)) });
-      }
+    const userRows = people.map((p) => ({
+      name: p.name, fg: p.active ? 'var(--ink)' : 'var(--muted)',
+      sub: !p.active ? s.inactive : (p.id === st.currentUser ? s.current : ''),
+      btnLabel: p.active ? s.deactivate : s.activate, btnFg: p.active ? 'var(--danger)' : 'var(--ink)',
+      toggle: () => this.setState({ pending: st.pending + 1,
+        people: people.map((x) => (x.id === p.id ? Object.assign({}, x, { active: !x.active }) : x)),
+        currentUser: p.active && p.id === st.currentUser ? null : st.currentUser })
     }));
-    const devices = st.devices.map((dv) => ({ name: dv.name, sub: ownerName(dv.owner) + ' · ' + s.lastSync + ' ' + dv.last,
-      remove: () => this.setState({ devices: st.devices.filter((x) => x.id !== dv.id) }) }));
-    const myDevices = st.devices.filter((x) => x.owner === 'u1').length;
-    const register = st.authMode === 'register';
-    const connect = () => {
-      if (!st.code.trim()) { this.setState({ authErr: 'auCodeErr' }); return; }
-      if (P.seatsFull) { this.setState({ authErr: 'auFull' }); return; }
-      this.setState({ authStep: 2, authErr: '' });
+    const addUser = () => {
+      const v = st.newUser.trim();
+      if (!v) return;
+      this.setState({ people: people.concat([{ id: 'u' + st.seq, name: v, active: true }]), newUser: '', seq: st.seq + 1, pending: st.pending + 1 });
     };
+    const addTag = () => {
+      const v = st.newTag.trim();
+      if (!v || st.tags.indexOf(v) >= 0) { this.setState({ newTag: '' }); return; }
+      this.setState({ tags: st.tags.concat([v]), newTag: '', pending: st.pending + 1 });
+    };
+    const tagRows = st.tags.map((t) => ({ label: t, removeLabel: s.removeTag + ': ' + t,
+      remove: () => this.setState({ tags: st.tags.filter((x) => x !== t), pending: st.pending + 1 }) }));
+    const deviceRows = st.devices.map((dv) => ({
+      name: devName(dv), sub: dv.current ? s.thisDevice : s.lastSync + ' ' + dv.last, canRemove: !dv.current,
+      remove: () => { this.setState({ devices: st.devices.filter((x) => x.id !== dv.id) }); this.flash(s.toastDevRemoved); }
+    }));
+    const unlock = () => {
+      if (!st.unlockPw) { this.setState({ unlockErr: true }); return; }
+      this.setState({ adminUnlocked: true, showUnlock: false, unlockPw: '', unlockErr: false, screen: 'admin' });
+    };
+
     const authSubmit = () => {
       if (!st.email.trim() || !st.pw) { this.setState({ authErr: 'auFieldErr' }); return; }
-      this.setState({ authStep: 3, authErr: '' });
+      if (P.seatsFull) { this.setState({ authErr: 'auFull' }); return; }
+      const devices = thisDev ? st.devices : [{ id: 'd' + st.seq, name: 'iPad Feld 03', last: this.now(), current: true }].concat(st.devices);
+      this.setState({ authStep: 3, authErr: '', pw: '', currentUser: null, devices: devices, seq: st.seq + 1,
+        org: Object.assign({}, st.org, { syncedAt: this.now() }) });
     };
     const langs = [['de', 'Deutsch'], ['en', 'English'], ['fr', 'Français'], ['es', 'Español']].map((l) =>
       Object.assign(chip(lang === l[0]), { label: l[1],
         pick: () => { if (l[0] === 'de' || l[0] === 'en') this.setState({ lang: l[0] }); else this.flash(s.toastLang); } }));
-    const rnd = () => Math.random().toString(36).slice(2, 6).toUpperCase().padEnd(4, 'X');
 
     const roomSet = [];
     (cur ? cur.samples : []).forEach((x) => { if (x.room && roomSet.indexOf(x.room) < 0) roomSet.push(x.room); });
@@ -1183,9 +1347,19 @@ class Component extends DCLogic {
     const dKind = d.kind === 'mixed' ? 'mixed' : 'single';
     const kinds = [['single', s.kindSingle, s.kindSingleHint], ['mixed', s.kindMixed, s.kindMixedHint]].map((k) =>
       Object.assign(chip(dKind === k[0]), { label: k[1], hint: k[2], pick: () => this.patchDraft({ kind: k[0] }) }));
+    const dTags = d.tags || [];
+    const tagChips = st.tags.map((t) => Object.assign(chip(dTags.indexOf(t) >= 0), { label: t,
+      toggle: () => this.patchDraft({ tags: toggleIn(dTags, t) }) }));
+    const addCustomTag = () => {
+      const v = st.customTag.trim();
+      if (!v) return;
+      const list = st.tags.indexOf(v) >= 0 ? st.tags : st.tags.concat([v]);
+      this.setState({ tags: list, customTag: '', pending: st.pending + (list === st.tags ? 0 : 1),
+        draft: Object.assign({}, d, { tags: dTags.indexOf(v) >= 0 ? dTags : dTags.concat([v]) }) });
+    };
 
     const analytes = st.analytes.map((a) => Object.assign(chip(d.analytes.indexOf(a) >= 0), { label: a,
-      toggle: () => this.patchDraft({ analytes: d.analytes.indexOf(a) >= 0 ? d.analytes.filter((x) => x !== a) : d.analytes.concat([a]) }) }));
+      toggle: () => this.patchDraft({ analytes: toggleIn(d.analytes, a) }) }));
 
     const planChips = (cur ? cur.plans : []).map((pl) => Object.assign(chip(d.planId === pl.id), { name: pl.name,
       pick: () => this.patchDraft({ planId: pl.id, x: null, y: null, prev: null }) }));
@@ -1212,6 +1386,7 @@ class Component extends DCLogic {
       { label: s.rvRoom, value: d.room || '—', go: goStep(1) },
       { label: s.rvNum, value: d.num || '—', go: goStep(1) },
       { label: s.kind, value: dKind === 'mixed' ? s.kindMixed : s.kindSingle, go: goStep(1) },
+      { label: s.tags, value: dTags.join(', ') || '—', go: goStep(1) },
       { label: s.rvAnalysis, value: d.analytes.join(', ') || '—', go: goStep(2) },
       { label: s.rvPlan, value: d.planId ? planName(d.planId) + ' · ' + (hasDraftMarker ? s.marked : s.noMarker) : '—', go: goStep(3) },
       { label: s.rvPhotos, value: String(d.photos.length), go: goStep(4) }
@@ -1235,72 +1410,94 @@ class Component extends DCLogic {
     const zooms = [1, 1.5, 2, 3, 4];
     const zi = Math.max(0, zooms.indexOf(st.zoom));
     const setEx = (patch) => this.setState({ ex: Object.assign({}, st.ex, patch) });
+    const goWho = () => this.setState({ screen: 'who', userQ: '' });
 
     return {
       w: phone ? 390 : 1180, h: phone ? 844 : 820, pad: phone ? 16 : 28, top: ro ? 44 : 0,
-      viewH: phone ? 330 : 410, stepLabelDisplay: phone ? 'none' : 'inline',
+      wideDisplay: phone ? 'none' : 'inline', viewH: phone ? 330 : 500,
       themeStyle: themeStyle, s: s, ro: ro, roOpacity: ro ? 0.45 : 1,
-      isProjects: screen === 'projects', isProject: screen === 'project' && !!cur, isWizard: screen === 'wizard' && !!cur,
-      isPlan: screen === 'plan' && !!pvPlan, isAuth: screen === 'auth', isSettings: screen === 'settings', isAdmin: screen === 'admin',
+      isWho: screen === 'who', isProjects: screen === 'projects', isProject: screen === 'project' && !!cur, isWizard: screen === 'wizard' && !!cur,
+      isPlan: screen === 'plan' && !!pvPlan, isAuth: screen === 'auth', isSettings: screen === 'settings', isAdmin: screen === 'admin' && adminOpen,
+
+      whoDir: phone ? 'column' : 'row', whoGap: phone ? 16 : 36, whoPad: phone ? 16 : 36,
+      whoLeftFlex: phone ? 'none' : '0 0 400px', whoSpacer: phone ? '0 0 0px' : '1 1 0', whoTitleSize: phone ? 24 : 30,
+      hasCurUser: !!curPerson, noCurUser: !curPerson,
+      curUser: curPerson ? { name: curPerson.name, initials: initials(curPerson.name) } : { name: '', initials: '' },
+      continueLabel: curPerson ? s.continueAs + ' ' + curPerson.name : '',
+      continueUser: () => this.setState({ screen: 'projects', userQ: '' }),
+      whoListTitle: curPerson ? s.whoOthers : s.whoAll,
+      whoList: whoList, whoEmpty: whoList.length === 0,
+      userQ: st.userQ, onUserQ: (e) => this.setState({ userQ: e.target.value }),
+      licSyncLine: licSyncLine, goWho: goWho,
+      userChip: curPerson ? { name: curPerson.name, initials: initials(curPerson.name) } : { name: s.switchUser, initials: '?' },
+      chipMax: phone ? 170 : 280,
+
+      searchBasis: phone ? '100%' : '220px', searchOrder: phone ? -1 : 0,
+      newProjectLabel: '+ ' + (phone ? s.projShort : s.newProject),
+      tabsFlex: phone ? '1 1 100%' : 'none', tabsOrder: phone ? -1 : 0, tabBtnFlex: phone ? '1 1 0' : 'none',
+      exportLabel: phone ? s.exportShort : s.exportBtn, newSampleLabel: '+ ' + (phone ? s.sampleShort : s.newSample),
+      projCount: cur ? cur.samples.length + ' ' + s.unit : '',
+
       syncLabel: st.pending > 0 ? st.pending + ' ' + s.pendingSuffix : s.synced,
-      syncNow: () => { this.setState({ pending: 0 }); this.flash(s.synced); },
-      goSettings: () => this.setState({ screen: 'settings' }),
-      goAdmin: () => this.setState({ screen: 'admin' }),
-      logout: () => this.setState({ screen: 'auth', authStep: 1, authMode: 'login', authErr: '', code: '', pw: '' }),
+      syncNow: () => { this.setState({ pending: 0, org: Object.assign({}, st.org, { syncedAt: this.now() }) }); this.flash(s.toastSynced); },
+      goSettings: () => this.setState({ screen: 'settings', confirmLogout: false }),
+      goAdmin: () => this.setState(adminOpen ? { screen: 'admin' } : { showUnlock: true, unlockPw: '', unlockErr: false }),
+      leaveAdmin: () => this.setState({ screen: 'settings', adminUnlocked: false }),
+      showUnlock: st.showUnlock, unlockPw: st.unlockPw, unlockErr: st.unlockErr,
+      unlockHint: s.unlockHintPre + ' ' + st.org.email + '.',
+      onUnlockPw: (e) => this.setState({ unlockPw: e.target.value, unlockErr: false }),
+      onUnlockKey: (e) => { if (e.key === 'Enter') unlock(); }, unlock: unlock,
+      closeUnlock: () => this.setState({ showUnlock: false, unlockPw: '', unlockErr: false }),
+      canLogout: !st.confirmLogout, confirmLogout: st.confirmLogout,
+      askLogout: () => this.setState({ confirmLogout: true }),
+      cancelLogout: () => this.setState({ confirmLogout: false }),
+      logout: () => this.setState({ screen: 'auth', authStep: 1, authErr: '', pw: '', confirmLogout: false,
+        devices: st.devices.filter((x) => !x.current) }),
+
       renameVal: st.renameVal, onRename: (e) => this.setState({ renameVal: e.target.value }),
       onRenameKey: (e) => { if (e.key === 'Enter') saveRename(); }, saveRename: saveRename,
       replacePlan: () => this.flash(s.toastReplaced),
       pv: pvPlan ? { name: pvPlan.name, countLabel: markCount(pvPlan.id) } : { name: '', countLabel: '' },
       pvMarkers: (cur && pvPlan ? cur.samples : []).filter((x) => x.planId === pvPlan.id && x.x != null)
-        .map((x) => ({ left: (x.x * 100).toFixed(2) + '%', top: (x.y * 100).toFixed(2) + '%', label: x.num || '—' })),
+        .map((x) => ({ left: pct(x.x), top: pct(x.y), label: x.num || '—' })),
       closePlan: () => this.setState({ screen: 'project', tab: 'plans', zoom: 1 }),
-      a1: st.authStep === 1, a2: st.authStep === 2, a3: st.authStep === 3,
-      a4: st.authStep === 4, a5: st.authStep === 5,
-      authStepLabel: st.authStep <= 3 ? s.auStep + ' ' + st.authStep + ' ' + s.of + ' 3' : '',
+
+      a1: st.authStep === 1, a3: st.authStep === 3, a4: st.authStep === 4, a5: st.authStep === 5,
       goForgot: () => this.setState({ authStep: 4, authErr: '' }),
       sendReset: () => this.setState(st.email.trim() ? { authStep: 5, authErr: '' } : { authErr: 'fgErr' }),
-      backToLogin: () => this.setState({ authStep: 2, authMode: 'login', authErr: '' }),
-      isScan: screen === 'scan' && !!cur && !!st.draft, isPhoto: screen === 'photo' && !!cur && photoIdx >= 0,
-      scanClose: () => this.setState({ screen: 'wizard' }),
-      scanDetect: () => this.setState({ screen: 'wizard', seq: st.seq + 1, draft: Object.assign({}, d, { num: 'IGN5128' + String(st.seq).slice(-2) + 'INS' }) }),
-      photoTitle: photoTitle, closePhoto: () => this.setState({ screen: 'wizard' }),
-      removePhoto: () => this.setState({ screen: 'wizard', draft: Object.assign({}, d, { photos: d.photos.filter((x) => x.id !== st.photoId) }) }),
-      projDlgTitle: st.editPid ? s.editProject : s.newProject, projDlgAction: st.editPid ? s.save : s.create,
-      openEdit: () => { if (cur) this.setState({ showNew: true, editPid: cur.id, newNum: cur.num, newName: cur.name, confirmProjDel: false }); },
-      canProjDel: !!st.editPid && !st.confirmProjDel, confirmProjDel: !!st.editPid && st.confirmProjDel,
-      askProjDel: () => this.setState({ confirmProjDel: true }),
-      doProjDel: () => this.setState({ projects: st.projects.filter((p) => p.id !== st.editPid), showNew: false, editPid: null, confirmProjDel: false, screen: 'projects', pid: null, pending: st.pending + 1 }),
-      exportDone: st.exportDone && !!cur, exFiles: exFiles, closeDone: () => this.setState({ exportDone: false }),
-      code: st.code, onCode: (e) => this.setState({ code: e.target.value.toUpperCase(), authErr: '' }),
-      onCodeKey: (e) => { if (e.key === 'Enter') connect(); }, connect: connect,
+      backToLogin: () => this.setState({ authStep: 1, authErr: '' }),
       hasAuthErr: !!st.authErr, authErr: st.authErr ? s[st.authErr] : '',
-      isRegister: register, isLogin: !register,
-      authTitle: register ? s.auRegister : s.auLogin, authToggle: register ? s.auToLogin : s.auToRegister,
-      toggleAuthMode: () => this.setState({ authMode: register ? 'login' : 'register', authErr: '' }),
-      orgLine: st.org.name + ' · ' + s.seatsFree + ': ' + Math.max(0, free),
-      fullName: st.fullName, email: st.email, pw: st.pw,
-      onFullName: (e) => this.setState({ fullName: e.target.value }),
+      email: st.email, pw: st.pw,
       onEmail: (e) => this.setState({ email: e.target.value, authErr: '' }),
       onPw: (e) => this.setState({ pw: e.target.value, authErr: '' }),
       onPwKey: (e) => { if (e.key === 'Enter') authSubmit(); }, authSubmit: authSubmit,
       doneRows: [
+        { label: s.setAccount, value: st.email.trim() || st.org.email },
         { label: s.setOrg, value: st.org.name },
-        { label: s.auDevice, value: phone ? 'iPhone' : 'iPad Feld 3' },
-        { label: s.auDevices, value: myDevices + ' ' + s.of + ' 2' },
-        { label: s.validUntil, value: st.org.validUntil }
+        { label: s.auDevice, value: phone ? 'iPhone Feld' : 'iPad Feld 03' },
+        { label: s.slots, value: slotsText },
+        { label: s.validUntil, value: st.org.validUntil },
+        { label: s.setUser, value: activeCount + ' ' + s.usersLoaded }
       ],
       accountRows: [
-        { label: s.setName, value: 'Erika Mustermann' },
+        { label: s.setUser, value: curPerson ? curPerson.name : '—' },
+        { label: s.setAccount, value: st.org.email },
         { label: s.setOrg, value: st.org.name },
-        { label: s.setRole, value: s.roleAdmin },
-        { label: s.auDevice, value: phone ? 'iPhone' : 'iPad Feld 3' },
-        { label: s.validUntil, value: st.org.validUntil }
+        { label: s.auDevice, value: phone ? 'iPhone Feld' : 'iPad Feld 03' },
+        { label: s.validUntil, value: st.org.validUntil },
+        { label: s.slots, value: slotsText }
       ],
-      langs: langs, org: st.org, people: people, devices: devices,
+      langs: langs, org: st.org,
       licenceLine: (ro ? s.adExpired : s.adActiveUntil) + ' ' + st.org.validUntil,
-      seatsLine: used + ' ' + s.of + ' ' + st.org.seats + ' ' + s.adSeats + ' · ' + s.adPerUser,
-      seatBar: Math.min(100, Math.round((used / st.org.seats) * 100)) + '%',
-      regenCode: () => this.setState({ org: Object.assign({}, st.org, { code: 'TWX-' + rnd() + '-' + rnd() }) }),
+      slotsLine: s.slots + ': ' + slotsText,
+      slotBar: Math.min(100, Math.round((used / slots) * 100)) + '%',
+      usersTitle: s.adUsers + ' · ' + activeCount, userRows: userRows,
+      newUser: st.newUser, onNewUser: (e) => this.setState({ newUser: e.target.value }),
+      onNewUserKey: (e) => { if (e.key === 'Enter') addUser(); }, addUser: addUser,
+      tagRows: tagRows, newTag: st.newTag, onNewTag: (e) => this.setState({ newTag: e.target.value }),
+      onNewTagKey: (e) => { if (e.key === 'Enter') addTag(); }, addTag: addTag,
+      devicesTitle: s.adDevices + ' · ' + slotsText, deviceRows: deviceRows,
+
       cur: cur || { num: '', name: '' },
       q: st.q, onQ: (e) => this.setState({ q: e.target.value }),
       projects: projects, noProjects: projects.length === 0,
@@ -1309,6 +1506,11 @@ class Component extends DCLogic {
       showNew: st.showNew, newNum: st.newNum, newName: st.newName,
       onNewNum: (e) => this.setState({ newNum: e.target.value }),
       onNewName: (e) => this.setState({ newName: e.target.value }),
+      projDlgTitle: st.editPid ? s.editProject : s.newProject, projDlgAction: st.editPid ? s.save : s.create,
+      openEdit: () => { if (cur) this.setState({ showNew: true, editPid: cur.id, newNum: cur.num, newName: cur.name, confirmProjDel: false }); },
+      canProjDel: !!st.editPid && !st.confirmProjDel, confirmProjDel: !!st.editPid && st.confirmProjDel,
+      askProjDel: () => this.setState({ confirmProjDel: true }),
+      doProjDel: () => this.setState({ projects: st.projects.filter((p) => p.id !== st.editPid), showNew: false, editPid: null, confirmProjDel: false, screen: 'projects', pid: null, pending: st.pending + 1 }),
       createProject: () => {
         if (!st.newNum.trim() && !st.newName.trim()) return;
         if (st.editPid) {
@@ -1339,16 +1541,28 @@ class Component extends DCLogic {
       },
       closeWizard: () => this.setState({ screen: 'project', draft: null, confirmDel: false }),
       ctx: ctxParts.join(' · ') || (d.id ? s.editSample : s.newSample),
+      byLine: s.by + ': ' + personName(d.by),
+      showRail: !phone, showStepBar: phone,
       steps: steps, s1: st.step === 1, s2: st.step === 2, s3: st.step === 3, s4: st.step === 4, s5: st.step === 5, notLast: st.step < 5,
+      saveNextLabel: phone ? s.saveNextShort : s.saveNext,
       d: d, rooms: rooms, hasRooms: rooms.length > 0, dup: dup, kinds: kinds,
+      tagChips: tagChips, customTag: st.customTag,
+      onCustomTag: (e) => this.setState({ customTag: e.target.value }),
+      onCustomTagKey: (e) => { if (e.key === 'Enter') addCustomTag(); }, addCustomTag: addCustomTag,
       onRoom: (e) => this.patchDraft({ room: e.target.value }),
       onNum: (e) => this.patchDraft({ num: e.target.value.toUpperCase() }),
       onNumKey: (e) => { if (e.key === 'Enter') next(); },
-      scan: () => this.setState({ screen: 'scan' }),
+      scanEnabled: false, scan: () => this.setState({ screen: 'scan' }),
+      isScan: screen === 'scan' && !!cur && !!st.draft, isPhoto: screen === 'photo' && !!cur && photoIdx >= 0,
+      scanClose: () => this.setState({ screen: 'wizard' }),
+      scanDetect: () => this.setState({ screen: 'wizard', seq: st.seq + 1, draft: Object.assign({}, d, { num: 'IGN5128' + String(st.seq).slice(-2) + 'INS' }) }),
+      photoTitle: photoTitle, closePhoto: () => this.setState({ screen: 'wizard' }),
+      removePhoto: () => this.setState({ screen: 'wizard', draft: Object.assign({}, d, { photos: d.photos.filter((x) => x.id !== st.photoId) }) }),
       analytes: analytes, custom: st.custom,
       onCustom: (e) => this.setState({ custom: e.target.value }),
       onCustomKey: (e) => { if (e.key === 'Enter') addCustom(); },
       addCustom: addCustom,
+      planDir: phone ? 'column' : 'row', ctrlDir: phone ? 'row' : 'column',
       planChips: planChips, markers: markers, hasDraftMarker: hasDraftMarker,
       dm: { left: hasDraftMarker ? pct(d.x) : '0%', top: hasDraftMarker ? pct(d.y) : '0%', label: d.num || s.newSample },
       planW: (st.zoom * 100) + '%', zoomLabel: Math.round(st.zoom * 100) + '%',
@@ -1364,7 +1578,7 @@ class Component extends DCLogic {
       },
       undoMarker: () => this.patchDraft(d.prev ? { x: d.prev.x, y: d.prev.y, prev: null } : { x: null, y: null }),
       photos: photos, noPhotos: photos.length === 0, takePhoto: addPhoto,
-      review: review, timeLine: s.created + ': ' + (d.time || ''),
+      review: review, timeLine: s.created + ': ' + (d.time || '') + ' · ' + personName(d.by),
       onDesc: (e) => this.patchDraft({ desc: e.target.value }),
       canDelete: !!d.id && !st.confirmDel && !ro, confirmDel: st.confirmDel,
       askDelete: () => this.setState({ confirmDel: true }),
@@ -1382,6 +1596,7 @@ class Component extends DCLogic {
       togCsv: () => setEx({ csv: !st.ex.csv }), togReport: () => setEx({ report: !st.ex.report }),
       setAnnot: () => setEx({ mode: 'annot' }), setFlat: () => setEx({ mode: 'flat' }),
       doExport: () => this.setState({ showExport: false, exportDone: true }),
+      exportDone: st.exportDone && !!cur, exFiles: exFiles, closeDone: () => this.setState({ exportDone: false }),
       hasToast: !!st.toast, toast: st.toast
     };
   }
